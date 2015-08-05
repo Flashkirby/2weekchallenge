@@ -22,12 +22,9 @@ public class GlobalInput : MonoBehaviour {
 	/// </summary>
 	public static bool Click()
 	{
-		if(Input.touchCount > 0)
+		if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
 		{
-			if(Input.GetTouch(0).phase == TouchPhase.Began);
-			{
-				return true;
-			}
+			return true;
 		}
 		if(Input.GetMouseButtonDown(0))
 		{

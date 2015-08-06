@@ -10,6 +10,7 @@ public class PlayerMotor : MonoBehaviour {
 	private BoxCollider2D c;
 
 	public bool grounded;
+	public float jumpTime;// current jump time. resets on landing
 
 	// Use this for initialization
 	void Start () {
@@ -26,10 +27,40 @@ public class PlayerMotor : MonoBehaviour {
 
 	private void playerInput()
 	{
+		playerJump();
+	}
+
+	/// <summary>
+	/// Determines behaviour for jumping.
+	/// Tap when grounded to begin jump
+	/// Hold for continued upwards velocity
+	/// Automatically stops when let go or reached 0 jumptime
+	/// </summary>
+	/// <returns><c>true</c>, if jumping is still active, <c>false</c> otherwise.</returns>
+	private bool playerJump()
+	{
+		if(GlobalInput.ClickUp() && jumpTime > 0)
+		{
+			jumpTime = 0;
+		}
+		
+		if(grounded && GlobalInput.ClickDown())
+		{
+			jumpTime = Settings.plJumpMax;
+		}
+
 		if(GlobalInput.Click())
 		{
-			r.velocity = new Vector2(r.velocity.x, Settings.plJumpPower);
+			if(jumpTime > 0)
+			{
+				float jumpSpeed;
+				jumpSpeed = Settings.plJumpPower * (jumpTime/Settings.plJumpMax);
+				r.velocity = new Vector2(r.velocity.x, jumpSpeed);
+				jumpTime -= Time.deltaTime;
+				return true;
+			}
 		}
+		return false;
 	}
 
 	/// <summary>
@@ -37,9 +68,20 @@ public class PlayerMotor : MonoBehaviour {
 	/// </summary>
 	private void autoAccelerate()
 	{
+		if(Settings.devPlayer)
+		{
+			Debug.Log("player speed x is "+r.velocity.x);
+		}
 		float velX = r.velocity.x;
-		velX += Settings.plAccel;
-		velX *= Settings.plFriction;
+		if(grounded)
+		{
+			velX += Settings.plAccel;
+			velX *= Settings.plFriction;
+		}
+		else
+		{
+			velX *= Settings.plAirResistance;
+		}
 		r.velocity = new Vector2(velX, r.velocity.y);
 	}
 
@@ -65,6 +107,7 @@ public class PlayerMotor : MonoBehaviour {
 		}
 
 		grounded = onGround;
+
 		if(Settings.devPlayer)
 		{
 			Debug.DrawRay(transform.position + new Vector3(-c.bounds.size.x/2, -c.bounds.size.y/2 - 0.001f),

@@ -3,26 +3,50 @@ using System.Collections;
 /// <summary>
 /// Player motor script, controls the player's speed, collision and ground detection.
 /// </summary>
-public class PlayerMotor : MonoBehaviour {
+public class PlayerMotor : MonoBehaviour 
+{
 	public Material[] mat;
 
 	private Rigidbody2D r;
 	private BoxCollider2D c;
+	
+	private float graceInputTime;
 
 	public bool grounded;
+	public bool autoBehaviour;// move normally, not in an action
 	public float jumpTime;// current jump time. resets on landing
 
 	// Use this for initialization
 	void Start () {
 		r = gameObject.GetComponent<Rigidbody2D>();
 		c = gameObject.GetComponent<BoxCollider2D>();
+		autoBehaviour = true;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		checkGround();
-		autoAccelerate();
-		playerInput();
+	void Update () 
+	{
+		if(GlobalInput.ClickDown())
+		{
+			graceInputTime = Settings.plGraceInputMaxTime;
+		}
+
+		if(autoBehaviour)
+		{
+			checkGround();
+			autoAccelerate();
+			playerInput();
+		}
+
+		graceInputTime -= Time.deltaTime;
+	}
+
+	void OnGUI ()
+	{
+		if(Settings.devPlayer)
+		{
+			GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "player speed x is "+r.velocity.x);
+		}
 	}
 
 	private void playerInput()
@@ -44,8 +68,9 @@ public class PlayerMotor : MonoBehaviour {
 			jumpTime = 0;
 		}
 		
-		if(grounded && GlobalInput.ClickDown())
+		if(graceInputTime > 0 && GlobalInput.Click() && grounded)
 		{
+			graceInputTime = 0;
 			jumpTime = Settings.plJumpMax;
 		}
 
@@ -68,10 +93,6 @@ public class PlayerMotor : MonoBehaviour {
 	/// </summary>
 	private void autoAccelerate()
 	{
-		if(Settings.devPlayer)
-		{
-			Debug.Log("player speed x is "+r.velocity.x);
-		}
 		float velX = r.velocity.x;
 		if(grounded)
 		{
@@ -127,5 +148,23 @@ public class PlayerMotor : MonoBehaviour {
 				rend.material = mat[1];
 			}
 		}
+	}
+	
+	/// <summary>
+	/// Sets acceleration for actions where default acceleration is disabled
+	/// </summary>
+	public void setAccelerate(float ratio)
+	{
+		float velX = r.velocity.x;
+		if(grounded)
+		{
+			velX += Settings.plAccel * ratio;
+			velX *= Settings.plFriction;
+		}
+		else
+		{
+			velX *= Settings.plAirResistance;
+		}
+		r.velocity = new Vector2(velX, r.velocity.y);
 	}
 }

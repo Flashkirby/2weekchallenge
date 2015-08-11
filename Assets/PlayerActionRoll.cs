@@ -16,8 +16,6 @@ public class PlayerActionRoll : MonoBehaviour
 	private PlayerMotor motor;
 	
 	private float graceInputTime;
-	private float rayStart;
-	private float rayDist;
 	
 	public bool actionActive;
 	public bool rollOnLand;
@@ -25,13 +23,11 @@ public class PlayerActionRoll : MonoBehaviour
 	private bool isLandingHard;
 	private float actionTime;
 	
-	void Start () {
+	void Start () 
+	{
 		r = gameObject.GetComponent<Rigidbody2D>();
 		c = gameObject.GetComponent<BoxCollider2D>();
 		motor = GetComponent<PlayerMotor>();
-
-		rayStart = c.bounds.size.y * (0.5f + 0.25f);
-		rayDist = c.bounds.size.y * (0.5f + 0.75f);
 	}
 
 	void Update () 
@@ -51,7 +47,7 @@ public class PlayerActionRoll : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		if(!motor.grounded)
+		if(!motor.grounded && r.velocity.y < 0)
 		{
 			checkLandingConditions();
 		}
@@ -107,6 +103,7 @@ public class PlayerActionRoll : MonoBehaviour
 			{
 				actionActive = false;
 				motor.autoBehaviour = true;
+				resetRollVariables();
 			}
 			
 			actionTime += Time.deltaTime;
@@ -146,6 +143,14 @@ public class PlayerActionRoll : MonoBehaviour
 		}
 	}
 
+	public void resetRollVariables()
+	{
+		rollOnLand = false;
+		isLandingStumbled = false;
+		isLandingHard = false;
+		graceInputTime = -Settings.plGraceInputCoolTime;
+	}
+	
 	private void checkLandingConditions()
 	{
 		if(checkFloor() && !actionActive)
@@ -169,10 +174,7 @@ public class PlayerActionRoll : MonoBehaviour
 			// in such as case where we magically go upwards, forget about this
 			if(r.velocity.y > 0)
 			{
-				rollOnLand = false;
-				isLandingStumbled = false;
-				isLandingHard = false;
-				graceInputTime = -Settings.plGraceInputCoolTime;
+				resetRollVariables();
 			}
 		}
 	}
@@ -223,7 +225,11 @@ public class PlayerActionRoll : MonoBehaviour
 	private void landHard()
 	{
 		//float progress = actionTime / Settings.plFallStumbleTimeMax;
-		r.velocity = new Vector2(0, r.velocity.y);
+		if(actionTime == 0)
+		{
+			r.velocity = new Vector2(r.velocity.x * 0.05f, r.velocity.y);
+		}
+		motor.setAccelerate(0);
 	}
 
 	private void landShortRoll()

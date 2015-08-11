@@ -53,7 +53,6 @@ public class PlayerMotor : MonoBehaviour
 		{
 			//stop jumplogic
 			jumpTime = 0;
-			graceInputTime = -Settings.plGraceInputCoolTime;
 		}
 	}
 

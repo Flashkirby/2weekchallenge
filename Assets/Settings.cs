@@ -36,13 +36,17 @@ public class Settings {
 	public static float plRollTimeMax = 0.4f; //rolling animation - acceleration is increased during it
 	public static float plRollSlowDown = 0.75f; //mult of velocity remaining after landing
 	public static float plRollAccel = 0.5f; //accel during hard rolls
+	public static float plVaultCheckDist = 1.5f; //worldspace distance checked as a radius from center to edge
+	public static float plVaultTimeMax = 0.3f; //checked distance for vault triggers. This gets faster with speed
+	public static float plVaultFlatVel = 8f; //minimum velocity speed after vaulting
+	public static float plVaultBonusVel = 1.2f; //bonus multiplier to the velocity
 
 	#endregion
 
 	#region camera
-	public static float camXOffset = 6;
+	public static float camXOffset = 8;
 	public static float camYOffset = 0;
 	public static float camZOffset = -20f;
-	public static float camSize = 12;
+	public static float camSize = 10;
 	#endregion
 }

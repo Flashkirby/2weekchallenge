@@ -69,7 +69,7 @@ public class PlayerActionClimb : MonoBehaviour
 	{
 		if(Settings.devPlayer)
 		{
-			if(actionActive) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "action is active: " + actionTime);
+			if(actionActive) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "climb is active: " + actionTime);
 		}
 	}
 
@@ -157,70 +157,66 @@ public class PlayerActionClimb : MonoBehaviour
 
 	private void climbEdge()
 	{
-		if(actionActive)
-		{
-			motor.autoBehaviour = false;
-			float progress = actionTime / Settings.plClimbTimeMax;
-			Vector2 position2d = transform.position;
-			Vector2 targetPosition;
+		motor.autoBehaviour = false;
+		float progress = actionTime / Settings.plClimbTimeMax;
+		Vector2 position2d = transform.position;
+		Vector2 targetPosition;
 
-			//climbing or stepping over
-			if(progress < Settings.plClimbRatio)
+		//climbing or stepping over
+		if(progress < Settings.plClimbRatio)
+		{
+			targetPosition = new Vector2 (
+				edgePoint.x - c.bounds.extents.x,
+				(edgePoint.y + c.bounds.extents.y) - (c.bounds.size.y * (Settings.plClimbRatio - progress) * (1/Settings.plClimbRatio))
+				);
+
+			transform.position = 
+				(position2d + (targetPosition * Time.deltaTime * actionSnapSpeed)) 
+					/ (1 + Time.deltaTime * actionSnapSpeed);
+
+			r.velocity = new Vector2(0, 0);
+		}
+		else
+		{
+			if(autoSnapTime > 0)
 			{
 				targetPosition = new Vector2 (
-					edgePoint.x - c.bounds.extents.x,
-					(edgePoint.y + c.bounds.extents.y) - (c.bounds.size.y * (Settings.plClimbRatio - progress) * (1/Settings.plClimbRatio))
+					edgePoint.x - c.bounds.extents.x + 0.1f,
+					edgePoint.y + c.bounds.extents.y + 0.05f
 					);
-
 				transform.position = 
 					(position2d + (targetPosition * Time.deltaTime * actionSnapSpeed)) 
 						/ (1 + Time.deltaTime * actionSnapSpeed);
-
 				r.velocity = new Vector2(0, 0);
+				hasSnapped = false;
 			}
 			else
-			{
-				if(autoSnapTime > 0)
-				{
-					targetPosition = new Vector2 (
-						edgePoint.x - c.bounds.extents.x + 0.1f,
-						edgePoint.y + c.bounds.extents.y + 0.05f
-						);
-					transform.position = 
-						(position2d + (targetPosition * Time.deltaTime * actionSnapSpeed)) 
-							/ (1 + Time.deltaTime * actionSnapSpeed);
-					r.velocity = new Vector2(0, 0);
-					hasSnapped = false;
-				}
-				else
-				{
-					if(!hasSnapped)
-					{
-						transform.position = new Vector2(
-							edgePoint.x - c.bounds.extents.x + 0.1f,
-							edgePoint.y + c.bounds.extents.y + 0.05f);
-						r.velocity = new Vector2(saveVelocityX * 0.5f + Settings.plClimbStepUpFlatVel, 0);
-						hasSnapped = true;
-					}
-				}
-			}
-
-			if(actionTime > Settings.plClimbTimeMax)
 			{
 				if(!hasSnapped)
 				{
 					transform.position = new Vector2(
 						edgePoint.x - c.bounds.extents.x + 0.1f,
 						edgePoint.y + c.bounds.extents.y + 0.05f);
-					r.velocity = new Vector2(saveVelocityX, 0);
+					r.velocity = new Vector2(saveVelocityX * 0.5f + Settings.plClimbStepUpFlatVel, 0);
+					hasSnapped = true;
 				}
-				actionActive = false;
-				motor.autoBehaviour = true;
 			}
-			
-			actionTime += Time.deltaTime;
-			autoSnapTime -= Time.deltaTime;
 		}
 
+		if(actionTime > Settings.plClimbTimeMax)
+		{
+			if(!hasSnapped)
+			{
+				transform.position = new Vector2(
+					edgePoint.x - c.bounds.extents.x + 0.1f,
+					edgePoint.y + c.bounds.extents.y + 0.05f);
+				r.velocity = new Vector2(saveVelocityX, 0);
+			}
+			actionActive = false;
+			motor.autoBehaviour = true;
+		}
+		
+		actionTime += Time.deltaTime;
+		autoSnapTime -= Time.deltaTime;
 	}
 }

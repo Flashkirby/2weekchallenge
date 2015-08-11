@@ -13,6 +13,8 @@ public class PlayerMotor : MonoBehaviour
 	private float graceInputTime;
 
 	public bool grounded;
+	public bool lastGrounded;
+	public Vector2 lastVelocity;
 	public bool autoBehaviour;// move normally, not in an action
 	public float jumpTime;// current jump time. resets on landing
 
@@ -46,6 +48,12 @@ public class PlayerMotor : MonoBehaviour
 			checkGround();
 			autoAccelerate();
 			playerJumpLogic();
+		}
+		else
+		{
+			//stop jumplogic
+			jumpTime = 0;
+			graceInputTime = -Settings.plGraceInputCoolTime;
 		}
 	}
 
@@ -113,7 +121,8 @@ public class PlayerMotor : MonoBehaviour
 	/// </summary>
 	private void checkGround()
 	{
-		//!!! NEED TO CHECK platforms only if we're going downwards
+		lastGrounded = grounded;
+		//At some point need to check platforms only if we're going downwards
 
 		//check left side
 		bool onGround = Physics2D.Raycast(

@@ -36,14 +36,14 @@ public class PlayerActionClimb : MonoBehaviour
 	}
 
 	void Update () {
-		if(GlobalInput.ClickDown())
+		if(GlobalInput.ClickDown() && graceInputTime <= -Settings.plGraceInputCoolTime)
 		{
 			graceInputTime = Settings.plGraceInputMaxTime;
 		}
 
 		if(actionActive)
 		{
-			graceInputTime = 0;
+			graceInputTime = -Settings.plGraceInputCoolTime;
 			climbEdge();
 		}
 
@@ -52,9 +52,16 @@ public class PlayerActionClimb : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		if(graceInputTime > 0 && GlobalInput.Click() && !actionActive)
+		if(graceInputTime > 0 && !actionActive)
 		{
-			checkEdges();
+			if(GlobalInput.Click())
+			{
+				checkEdges();
+			}
+			else
+			{
+				graceInputTime = 0;
+			}
 		}
 	}
 	
@@ -84,7 +91,7 @@ public class PlayerActionClimb : MonoBehaviour
 			              Vector2.down * c.bounds.size.y,
 			              Color.green);
 		}
-
+		/*
 		bool canClimb = true;
 		//check no platforms in me
 		RaycastHit2D[] allHits = Physics2D.RaycastAll(
@@ -100,10 +107,20 @@ public class PlayerActionClimb : MonoBehaviour
 		}
 
 		//check ahead to set up cllimbEdge
-		if(canClimb)
+		if(canClimb)*/
+		RaycastHit2D hit = Physics2D.Raycast(
+			transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult), rayStart),
+			Vector2.down,
+			rayDist);
+		if(hit.collider != null && hit.distance > 0)//hit something within the ray
 		{
-			RaycastHit2D hit = Physics2D.Raycast(
-				transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult), rayStart),
+			//start climbing that edge
+			climbEdgeInitial(hit);
+		}
+		else
+		{
+			hit = Physics2D.Raycast(
+				transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult / 2), rayStart),
 				Vector2.down,
 				rayDist);
 			if(hit.collider != null && hit.distance > 0)//hit something within the ray
@@ -111,36 +128,30 @@ public class PlayerActionClimb : MonoBehaviour
 				//start climbing that edge
 				climbEdgeInitial(hit);
 			}
-			else
-			{
-				hit = Physics2D.Raycast(
-					transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult / 2), rayStart),
-					Vector2.down,
-					rayDist);
-				if(hit.collider != null && hit.distance > 0)//hit something within the ray
-				{
-					//start climbing that edge
-					climbEdgeInitial(hit);
-				}
-			}
 		}
 	}
 
 	private void climbEdgeInitial(RaycastHit2D hit)
 	{
-		actionTime =  hit.distance / rayDist;
+		//the top left corner of the collider
+		edgePoint = new Vector2(hit.collider.bounds.min.x, hit.collider.bounds.max.y);
+
+		//WILL NOT GRAB THE EDGE IF IT IS ALREADY BEHIND PLAYER
+		if(edgePoint.x < transform.position.x) return;
+
+		
+		actionActive = true;
+		actionTime = hit.distance / rayDist;
+
 		float progress = actionTime / Settings.plClimbTimeMax;
-		saveVelocityX = r.velocity.x;
+		saveVelocityX = r.velocity.x + (Settings.plClimbStepUpBonusVel * 2);
 		if(progress < Settings.plClimbRatio)//lose velocity if climbing
 		{
 			saveVelocityX = 0;
 		}
-		actionActive = true;
-		hasSnapped = false;
-		//the top left corner of the collider
-		edgePoint = new Vector2(hit.collider.bounds.min.x, hit.collider.bounds.max.y);
 
 		//stop instant teleporting
+		hasSnapped = false;
 		autoSnapTime = Mathf.Min(Vector2.Distance(transform.position,edgePoint) * 0.05f, Settings.plClimbTimeMax * 0.5f);
 	}
 
@@ -188,10 +199,9 @@ public class PlayerActionClimb : MonoBehaviour
 						transform.position = new Vector2(
 							edgePoint.x - c.bounds.extents.x + 0.1f,
 							edgePoint.y + c.bounds.extents.y + 0.05f);
-						r.velocity = new Vector2(saveVelocityX * 0.5f + 3f, 0);
+						r.velocity = new Vector2(saveVelocityX * 0.5f + Settings.plClimbStepUpFlatVel, 0);
 						hasSnapped = true;
 					}
-					motor.setAccelerate(1.1f);
 				}
 			}
 

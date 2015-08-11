@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+/// <summary>
+/// Module that controls the action of climbing a wall.
+/// 
+/// When raycast hits near a wall in the grace period
+/// and input is still being held down, climb the wall based on 
+/// the height of the player in the timeline/progress.
+/// </summary>
 public class PlayerActionClimb : MonoBehaviour 
 {
 
@@ -15,7 +21,6 @@ public class PlayerActionClimb : MonoBehaviour
 	
 	public bool actionActive;
 	private float actionTime;
-	private float actionClimbRatio = 0.6f;
 	private float actionSnapSpeed = 50f;
 	private float autoSnapTime;
 	private float saveVelocityX;
@@ -25,6 +30,7 @@ public class PlayerActionClimb : MonoBehaviour
 		r = gameObject.GetComponent<Rigidbody2D>();
 		c = gameObject.GetComponent<BoxCollider2D>();
 		motor = GetComponent<PlayerMotor>();
+
 		rayStart = c.bounds.size.y * (0.5f + 0.25f);
 		rayDist = c.bounds.size.y * (0.5f + 0.75f);
 	}
@@ -35,11 +41,6 @@ public class PlayerActionClimb : MonoBehaviour
 			graceInputTime = Settings.plGraceInputMaxTime;
 		}
 
-		if(graceInputTime > 0 && GlobalInput.Click() && !actionActive)
-		{
-			checkEdges();
-		}
-
 		if(actionActive)
 		{
 			graceInputTime = 0;
@@ -48,12 +49,20 @@ public class PlayerActionClimb : MonoBehaviour
 
 		graceInputTime -= Time.deltaTime;
 	}
+
+	void FixedUpdate()
+	{
+		if(graceInputTime > 0 && GlobalInput.Click() && !actionActive)
+		{
+			checkEdges();
+		}
+	}
 	
 	void OnGUI ()
 	{
 		if(Settings.devPlayer)
 		{
-			if(actionActive) GUI.Label(new Rect(0, 10, Screen.width, Screen.height), "action is active: " + actionTime);
+			if(actionActive) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "action is active: " + actionTime);
 		}
 	}
 
@@ -65,7 +74,10 @@ public class PlayerActionClimb : MonoBehaviour
 	{
 		if(Settings.devPlayer)
 		{
-			Debug.DrawRay(transform.position + new Vector3(c.bounds.size.x * Settings.plClimbReachXMult, rayStart),
+			Debug.DrawRay(transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult), rayStart),
+			              Vector2.down * rayDist,
+			              Color.green);
+			Debug.DrawRay(transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult / 2), rayStart),
 			              Vector2.down * rayDist,
 			              Color.green);
 			Debug.DrawRay(transform.position + new Vector3(0, c.bounds.size.y * 0.5f),
@@ -91,13 +103,25 @@ public class PlayerActionClimb : MonoBehaviour
 		if(canClimb)
 		{
 			RaycastHit2D hit = Physics2D.Raycast(
-				transform.position + new Vector3(c.bounds.size.x * 1.5f, rayStart),
+				transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult), rayStart),
 				Vector2.down,
 				rayDist);
 			if(hit.collider != null && hit.distance > 0)//hit something within the ray
 			{
 				//start climbing that edge
 				climbEdgeInitial(hit);
+			}
+			else
+			{
+				hit = Physics2D.Raycast(
+					transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult / 2), rayStart),
+					Vector2.down,
+					rayDist);
+				if(hit.collider != null && hit.distance > 0)//hit something within the ray
+				{
+					//start climbing that edge
+					climbEdgeInitial(hit);
+				}
 			}
 		}
 	}
@@ -107,7 +131,7 @@ public class PlayerActionClimb : MonoBehaviour
 		actionTime =  hit.distance / rayDist;
 		float progress = actionTime / Settings.plClimbTimeMax;
 		saveVelocityX = r.velocity.x;
-		if(progress < actionClimbRatio)//lose velocity if climbing
+		if(progress < Settings.plClimbRatio)//lose velocity if climbing
 		{
 			saveVelocityX = 0;
 		}
@@ -130,11 +154,11 @@ public class PlayerActionClimb : MonoBehaviour
 			Vector2 targetPosition;
 
 			//climbing or stepping over
-			if(progress < actionClimbRatio)
+			if(progress < Settings.plClimbRatio)
 			{
 				targetPosition = new Vector2 (
 					edgePoint.x - c.bounds.extents.x,
-					(edgePoint.y + c.bounds.extents.y) - (c.bounds.size.y * (actionClimbRatio - progress) * (1/actionClimbRatio))
+					(edgePoint.y + c.bounds.extents.y) - (c.bounds.size.y * (Settings.plClimbRatio - progress) * (1/Settings.plClimbRatio))
 					);
 
 				transform.position = 

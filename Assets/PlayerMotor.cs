@@ -30,15 +30,23 @@ public class PlayerMotor : MonoBehaviour
 		{
 			graceInputTime = Settings.plGraceInputMaxTime;
 		}
+		
+		if(autoBehaviour)
+		{
+			playerJumpInput();
+		}
 
+		graceInputTime -= Time.deltaTime;
+	}
+
+	void FixedUpdate()
+	{
 		if(autoBehaviour)
 		{
 			checkGround();
 			autoAccelerate();
-			playerInput();
+			playerJumpLogic();
 		}
-
-		graceInputTime -= Time.deltaTime;
 	}
 
 	void OnGUI ()
@@ -49,19 +57,7 @@ public class PlayerMotor : MonoBehaviour
 		}
 	}
 
-	private void playerInput()
-	{
-		playerJump();
-	}
-
-	/// <summary>
-	/// Determines behaviour for jumping.
-	/// Tap when grounded to begin jump
-	/// Hold for continued upwards velocity
-	/// Automatically stops when let go or reached 0 jumptime
-	/// </summary>
-	/// <returns><c>true</c>, if jumping is still active, <c>false</c> otherwise.</returns>
-	private bool playerJump()
+	private void playerJumpInput()
 	{
 		if(GlobalInput.ClickUp() && jumpTime > 0)
 		{
@@ -73,7 +69,15 @@ public class PlayerMotor : MonoBehaviour
 			graceInputTime = 0;
 			jumpTime = Settings.plJumpMax;
 		}
-
+	}
+	/// <summary>
+	/// Determines behaviour for jumping.
+	/// Tap when grounded to begin jump
+	/// Hold for continued upwards velocity
+	/// Automatically stops when let go or reached 0 jumptime
+	/// </summary>
+	private void playerJumpLogic()
+	{
 		if(GlobalInput.Click())
 		{
 			if(jumpTime > 0)
@@ -82,10 +86,8 @@ public class PlayerMotor : MonoBehaviour
 				jumpSpeed = Settings.plJumpPower * (jumpTime/Settings.plJumpMax);
 				r.velocity = new Vector2(r.velocity.x, jumpSpeed);
 				jumpTime -= Time.deltaTime;
-				return true;
 			}
 		}
-		return false;
 	}
 
 	/// <summary>

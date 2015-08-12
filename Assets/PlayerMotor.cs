@@ -10,7 +10,7 @@ public class PlayerMotor : MonoBehaviour
 	private Rigidbody2D r;
 	private BoxCollider2D c;
 	
-	private float graceInputTime;
+	public float graceInputTime;
 
 	public bool grounded;
 	public bool lastGrounded;
@@ -66,7 +66,7 @@ public class PlayerMotor : MonoBehaviour
 
 	private void playerJumpInput()
 	{
-		if(GlobalInput.ClickUp() && jumpTime > 0)
+		if(!GlobalInput.Click() && jumpTime > 0)
 		{
 			jumpTime = 0;
 		}

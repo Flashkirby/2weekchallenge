@@ -40,6 +40,10 @@ public class Settings {
 	public static float plVaultTimeMax = 0.3f; //checked distance for vault triggers. This gets faster with speed
 	public static float plVaultFlatVel = 8f; //minimum velocity speed after vaulting
 	public static float plVaultBonusVel = 1.2f; //bonus multiplier to the velocity
+	public static float plKickJumpCheckDist = 1.5f; //worldspace distance checked as a radius from center to edge
+	public static float plKickJumpTimeMax = 0.7f; //checked distance for vault triggers. This gets faster with speed
+	public static float plKickJumpFlatVel = 8f; //minimum velocity speed after vaulting
+	public static float plKickJumpBonusVel = 1.2f; //bonus multiplier to the velocity
 
 	#endregion
 

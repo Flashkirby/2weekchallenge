@@ -80,7 +80,7 @@ public class PlayerActionVault : MonoBehaviour
 		{
 			Collider2D col = go.GetComponent<Collider2D>();
 			checkPoint = new Vector2(col.bounds.min.x, col.bounds.max.y);
-			if(col.bounds.min.x > c.bounds.max.x && yPoint <= col.bounds.max.y + 0.1f && yPoint >= col.bounds.min.y - 0.1f)
+			if(checkPoint.x > c.bounds.max.x && yPoint <= checkPoint.y + 0.1f && yPoint >= col.bounds.min.y - 0.1f)
 			{
 				float distNum = Vector2.Distance(transform.position, checkPoint);
 				if(distNum <= Settings.plVaultCheckDist)

@@ -9,6 +9,7 @@ using System.Collections;
 /// </summary>
 public class PlayerActionClimb : MonoBehaviour 
 {
+	public const int myAction = 1;
 
 	private Rigidbody2D r;
 	private BoxCollider2D c;
@@ -18,8 +19,7 @@ public class PlayerActionClimb : MonoBehaviour
 	private float rayStart;
 	private float rayDist;
 	private Vector2 edgePoint;
-	
-	public bool actionActive;
+
 	private float actionTime;
 	private float actionSnapSpeed = 50f;
 	private float autoSnapTime;
@@ -41,10 +41,14 @@ public class PlayerActionClimb : MonoBehaviour
 			graceInputTime = Settings.plGraceInputMaxTime;
 		}
 
-		if(actionActive)
+		if(motor.actionActive == myAction)
 		{
 			graceInputTime = -Settings.plGraceInputCoolTime;
 			climbEdge();
+		}
+		else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
+		{
+			graceInputTime = -Settings.plGraceInputCoolTime;
 		}
 
 		graceInputTime -= Time.deltaTime;
@@ -52,7 +56,7 @@ public class PlayerActionClimb : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		if(graceInputTime > 0 && !actionActive)
+		if(graceInputTime > 0 && motor.actionActive == 0)
 		{
 			if(GlobalInput.Click())
 			{
@@ -69,7 +73,7 @@ public class PlayerActionClimb : MonoBehaviour
 	{
 		if(Settings.devPlayer)
 		{
-			if(actionActive) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "climb is active: " + actionTime);
+			if(motor.actionActive == myAction) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "climb is active: " + actionTime);
 		}
 	}
 
@@ -140,7 +144,7 @@ public class PlayerActionClimb : MonoBehaviour
 		if(edgePoint.x < transform.position.x) return;
 
 		
-		actionActive = true;
+		motor.actionActive = myAction;
 		actionTime = hit.distance / rayDist;
 
 		float progress = actionTime / Settings.plClimbTimeMax;
@@ -212,7 +216,7 @@ public class PlayerActionClimb : MonoBehaviour
 					edgePoint.y + c.bounds.extents.y + 0.05f);
 				r.velocity = new Vector2(saveVelocityX, 0);
 			}
-			actionActive = false;
+			motor.actionActive = 0;
 			motor.autoBehaviour = true;
 		}
 		

@@ -15,6 +15,7 @@ public class PlayerMotor : MonoBehaviour
 	public bool grounded;
 	public bool lastGrounded;
 	public Vector2 lastVelocity;
+	public int actionActive;
 	public bool autoBehaviour;// move normally, not in an action
 	public float jumpTime;// current jump time. resets on landing
 

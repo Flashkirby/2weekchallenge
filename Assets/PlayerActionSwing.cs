@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PlayerActionSwing : MonoBehaviour
 {
+	public const int myAction = 5;
 	
 	private Rigidbody2D r;
 	private BoxCollider2D c;
@@ -12,13 +13,11 @@ public class PlayerActionSwing : MonoBehaviour
 	private Vector2 swingingPoint;
 	//private GameObject swingingPoint;
 	//private DistanceJoint2D joint;
-	
-	public bool actionActive;
+
 	private float actionAngle;
 	private float actionSnapSpeed = 50f;
 	private float autoSnapTime;
 	private float swingSpeed;
-	private bool hasSnapped;
 	
 	void Start () 
 	{
@@ -45,7 +44,7 @@ public class PlayerActionSwing : MonoBehaviour
 	
 	void FixedUpdate () 
 	{
-		if(graceInputTime > 0 && !actionActive)
+		if(graceInputTime > 0 && motor.actionActive == 0)
 		{
 			if(GlobalInput.Click())
 			{
@@ -60,10 +59,14 @@ public class PlayerActionSwing : MonoBehaviour
 			}
 		}
 		
-		if(actionActive)
+		if(motor.actionActive == myAction)
 		{
 			graceInputTime = -Settings.plGraceInputCoolTime;
 			swingAction();
+		}
+		else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
+		{
+			graceInputTime = -Settings.plGraceInputCoolTime;
 		}
 	}
 	
@@ -71,7 +74,7 @@ public class PlayerActionSwing : MonoBehaviour
 	{
 		if(Settings.devPlayer)
 		{
-			if(actionActive) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "swinging is active");
+			if(motor.actionActive == myAction) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "swinging is active");
 		}
 	}
 
@@ -120,10 +123,9 @@ public class PlayerActionSwing : MonoBehaviour
 
 	private void swingInitial()
 	{
-		actionActive = true;
+		motor.actionActive = myAction;
 		
 		//stop instant teleporting
-		hasSnapped = false;
 		autoSnapTime = Mathf.Min(Vector2.Distance(transform.position, swingingPoint) * 0.05f, Settings.plClimbTimeMax * 0.5f);
 
 		/*
@@ -165,7 +167,6 @@ public class PlayerActionSwing : MonoBehaviour
 			transform.position = 
 				(position2D + (targetPosition * Time.deltaTime * actionSnapSpeed))
 					/ (1 + Time.deltaTime * actionSnapSpeed);
-			hasSnapped = false;
 		}
 		else
 		{
@@ -177,17 +178,19 @@ public class PlayerActionSwing : MonoBehaviour
 		   || !GlobalInput.Click()
 		   )
 		{
-			actionActive = false;
+			motor.actionActive = 0;
 			motor.autoBehaviour = true;
 			motor.jumpTime = 0;
 		}
+
+		autoSnapTime -= Time.deltaTime;
 		/*
 		if(	!GlobalInput.Click() ||
 		    Vector2.Angle(transform.position, swingingPoint.transform.position) > Settings.plSwingAutoReleaseAng ||
 			(r.velocity.y < -0.1f && transform.position.x > swingingPoint.transform.position.x) ||
 		    r.velocity.x < 0 )
 		{
-			actionActive = false;
+			motor.actionActive = 0;
 
 			Destroy(joint);
 		}

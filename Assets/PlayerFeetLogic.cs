@@ -14,16 +14,11 @@ public class PlayerFeetLogic : MonoBehaviour {
 
 		playerFeet.size = new Vector2(
 			playerBox.size.x,
-			minColliderSize / playerBox.bounds.size.y
+			minColliderSize / playerBox.transform.localScale.y
 			);
 		playerFeet.offset = new Vector2(
 			playerBox.offset.x,
 			playerBox.offset.y - (playerBox.size.y - playerFeet.size.y) / 2
 			);
-	}
-
-	void Update()
-	{
-
 	}
 }

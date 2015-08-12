@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PlayerActionVault : MonoBehaviour 
 {
+	public const int myAction = 3;
 	
 	private Rigidbody2D r;
 	private BoxCollider2D c;
@@ -10,8 +11,7 @@ public class PlayerActionVault : MonoBehaviour
 	
 	private float graceInputTime;
 	private Vector2 edgePoint;
-	
-	public bool actionActive;
+
 	private float actionTime;
 	private float actionSnapSpeed = 50f;
 	private float saveVelocityX;
@@ -30,10 +30,14 @@ public class PlayerActionVault : MonoBehaviour
 			graceInputTime = Settings.plGraceInputMaxTime;
 		}
 		
-		if(actionActive)
+		if(motor.actionActive == myAction)
 		{
 			graceInputTime = -Settings.plGraceInputCoolTime;
 			vaultAction();
+		}
+		else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
+		{
+			graceInputTime = -Settings.plGraceInputCoolTime;
 		}
 		
 		graceInputTime -= Time.deltaTime;
@@ -41,7 +45,7 @@ public class PlayerActionVault : MonoBehaviour
 	
 	void FixedUpdate () 
 	{
-		if(graceInputTime > 0 && !actionActive)
+		if(graceInputTime > 0 && motor.actionActive == 0)
 		{
 			if(GlobalInput.Click())
 			{
@@ -61,7 +65,7 @@ public class PlayerActionVault : MonoBehaviour
 	{
 		if(Settings.devPlayer)
 		{
-			if(actionActive) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "vaulting is active: " + actionTime);
+			if(motor.actionActive == myAction) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "vaulting is active: " + actionTime);
 		}
 	}
 
@@ -110,7 +114,7 @@ public class PlayerActionVault : MonoBehaviour
 
 	private void vaultInitial()
 	{
-		actionActive = true;
+		motor.actionActive = myAction;
 		actionTime = 0;
 
 		saveVelocityX = Mathf.Max(r.velocity.x + Settings.plVaultBonusVel, Settings.plVaultFlatVel);
@@ -142,7 +146,7 @@ public class PlayerActionVault : MonoBehaviour
 				edgePoint.y + c.bounds.extents.y);
 			r.velocity = new Vector2(saveVelocityX, 0);
 
-			actionActive = false;
+			motor.actionActive = 0;
 			motor.autoBehaviour = true;
 		}
 

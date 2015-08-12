@@ -10,14 +10,14 @@ using System.Collections;
 /// </summary>
 public class PlayerActionRoll : MonoBehaviour 
 {
+	public const int myAction = 2;
 	
 	private Rigidbody2D r;
 	private BoxCollider2D c;
 	private PlayerMotor motor;
 	
 	private float graceInputTime;
-	
-	public bool actionActive;
+
 	public bool rollOnLand;
 	private bool isLandingStumbled;
 	private bool isLandingHard;
@@ -37,7 +37,11 @@ public class PlayerActionRoll : MonoBehaviour
 			graceInputTime = Settings.plGraceInputMaxTime;
 		}
 		
-		if(actionActive)
+		if(motor.actionActive == myAction)
+		{
+			graceInputTime = -Settings.plGraceInputCoolTime;
+		}
+		else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
 		{
 			graceInputTime = -Settings.plGraceInputCoolTime;
 		}
@@ -56,12 +60,12 @@ public class PlayerActionRoll : MonoBehaviour
 		{
 			if (rollOnLand || isLandingStumbled || isLandingHard)
 			{
-				actionActive = true;
+				motor.actionActive = myAction;
 				actionTime = 0;
 			}
 		}
 
-		if(motor.grounded && actionActive)
+		if(motor.grounded && motor.actionActive == myAction)
 		{
 			motor.autoBehaviour = false;
 			bool done = false;
@@ -101,7 +105,7 @@ public class PlayerActionRoll : MonoBehaviour
 
 			if(done)
 			{
-				actionActive = false;
+				motor.actionActive = 0;
 				motor.autoBehaviour = true;
 				resetRollVariables();
 			}
@@ -139,7 +143,7 @@ public class PlayerActionRoll : MonoBehaviour
 					rollType = "landing small roll";
 				}
 			}
-			if(actionActive) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), rollType + " is active: " + actionTime);
+			if(motor.actionActive == myAction) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), rollType + " is active: " + actionTime);
 		}
 	}
 
@@ -153,7 +157,7 @@ public class PlayerActionRoll : MonoBehaviour
 	
 	private void checkLandingConditions()
 	{
-		if(checkFloor() && !actionActive)
+		if(checkFloor() && motor.actionActive == 0)
 		{
 			if(graceInputTime > 0)
 			{
@@ -181,27 +185,28 @@ public class PlayerActionRoll : MonoBehaviour
 
 	private bool checkFloor()
 	{
+		Vector3 velo3D = new Vector3(r.velocity.x, r.velocity.y, 0) * Time.fixedDeltaTime;
 		if(Settings.devPlayer)
 		{
 			Color col = Color.gray;
 			if(graceInputTime > 0) col = Color.cyan;
-			Debug.DrawRay(transform.position + new Vector3(-c.bounds.size.x/2, -c.bounds.size.y/2 - 0.001f),
+			Debug.DrawRay(transform.position + velo3D + new Vector3(-c.bounds.size.x/2, -c.bounds.size.y/2 - 0.001f),
 			              Vector2.down * Settings.plRollCheckDist,
 			              col);
-			Debug.DrawRay(transform.position + new Vector3(c.bounds.size.x/2, -c.bounds.size.y/2 - 0.001f),
+			Debug.DrawRay(transform.position + velo3D + new Vector3(c.bounds.size.x/2, -c.bounds.size.y/2 - 0.001f),
 			              Vector2.down * Settings.plRollCheckDist,
 			              col);
 		}
 
 		bool onGround = Physics2D.Raycast(
-			transform.position - new Vector3(c.bounds.size.x / 2, c.bounds.size.y / 2 + 0.005f),
+			transform.position + velo3D - new Vector3(c.bounds.size.x / 2, c.bounds.size.y / 2 + 0.005f),
 			Vector2.down,
 			Settings.plRollCheckDist);
 		//check right side if left side is not fine
 		if(!onGround)
 		{
 			onGround = Physics2D.Raycast(
-				transform.position - new Vector3(-c.bounds.size.x / 2, c.bounds.size.y / 2 + 0.005f),
+				transform.position + velo3D - new Vector3(-c.bounds.size.x / 2, c.bounds.size.y / 2 + 0.005f),
 				Vector2.down,		 
 				Settings.plRollCheckDist);
 		}

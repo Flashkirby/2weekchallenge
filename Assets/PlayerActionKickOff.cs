@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PlayerActionKickOff : MonoBehaviour
 {
+	public const int myAction = 4;
 		
 	private Rigidbody2D r;
 	private BoxCollider2D c;
@@ -12,9 +13,8 @@ public class PlayerActionKickOff : MonoBehaviour
 	private Vector2 edgePoint;
 	private Vector2 edgePointInverse;
 
-	public bool actionActive;
 	private float actionTime;
-	private float actionSnapSpeed = 50f;
+	private float actionSnapSpeed = 20f;
 	private float saveVelocityX;
 	private float saveVelocityNormalX;
 
@@ -32,10 +32,14 @@ public class PlayerActionKickOff : MonoBehaviour
 			graceInputTime = Settings.plGraceInputMaxTime;
 		}
 		
-		if(actionActive)
+		if(motor.actionActive == myAction)
 		{
 			graceInputTime = -Settings.plGraceInputCoolTime;
 			kickAction();
+		}
+		else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
+		{
+			graceInputTime = -Settings.plGraceInputCoolTime;
 		}
 		
 		graceInputTime -= Time.deltaTime;
@@ -43,7 +47,7 @@ public class PlayerActionKickOff : MonoBehaviour
 
 	void FixedUpdate () 
 	{
-		if(graceInputTime > 0 && !actionActive)
+		if(graceInputTime > 0 && motor.actionActive == 0)
 		{
 			if(GlobalInput.Click())
 			{
@@ -63,7 +67,7 @@ public class PlayerActionKickOff : MonoBehaviour
 	{
 		if(Settings.devPlayer)
 		{
-			if(actionActive) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "kick off is active: " + actionTime);
+			if(motor.actionActive == myAction) GUI.Label(new Rect(0, Screen.height - 20, Screen.width, Screen.height), "kick off is active: " + actionTime);
 		}
 	}
 
@@ -114,7 +118,7 @@ public class PlayerActionKickOff : MonoBehaviour
 
 	private void kickInitial()
 	{
-		actionActive = true;
+		motor.actionActive = myAction;
 		actionTime = 0;
 		
 		saveVelocityX = Mathf.Max(r.velocity.x + Settings.plKickJumpBonusVel, Settings.plKickJumpFlatVel);
@@ -155,7 +159,7 @@ public class PlayerActionKickOff : MonoBehaviour
 				r.velocity = new Vector2(saveVelocityNormalX, 1);
 			}
 
-			actionActive = false;
+			motor.actionActive = 0;
 			motor.autoBehaviour = true;
 		}
 		

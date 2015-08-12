@@ -44,6 +44,9 @@ public class Settings {
 	public static float plKickJumpTimeMax = 0.7f; //checked distance for vault triggers. This gets faster with speed
 	public static float plKickJumpFlatVel = 8f; //minimum velocity speed after vaulting
 	public static float plKickJumpBonusVel = 1.2f; //bonus multiplier to the velocity
+	public static float plSwingSnapDist = 2.5f; //distance you can grab swing from
+	public static float plSwingRadius = 2f; //distance from swing player maintains
+	public static float plSwingAutoReleaseAng = -70; //angle that swing releases at, only valid between -90 and 90
 
 	#endregion
 

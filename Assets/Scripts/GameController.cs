@@ -109,6 +109,7 @@ public class GameController : MonoBehaviour
 
 		go.transform.position = lastPatternBaseEnd - attachStart.localPosition;
 		lastPatternBaseEnd = attachEnd.position;
+
 	}
 
 	private void cleanUpGameObjects()

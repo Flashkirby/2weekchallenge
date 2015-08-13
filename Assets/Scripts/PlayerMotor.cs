@@ -44,6 +44,20 @@ public class PlayerMotor : MonoBehaviour
 
 	void FixedUpdate()
 	{
+		/*
+		//FLOATING POINT ERROR NOOOOOOOOO
+		if(r.velocity.x.Equals(0) && autoBehaviour)
+		{
+			transform.position =
+				new Vector3(
+					transform.position.x,
+					transform.position.y + 0.001f,
+					0
+					);
+		}
+		//OK FINE NOW
+		*/
+
 		if(autoBehaviour)
 		{
 			checkGround();
@@ -116,6 +130,26 @@ public class PlayerMotor : MonoBehaviour
 		r.velocity = new Vector2(velX, r.velocity.y);
 	}
 
+	private void stepUpToGround()
+	{
+		float snapdist = 0.4f;
+		RaycastHit2D hit = Physics2D.Raycast(
+			new Vector2(c.bounds.max.x + 2 * r.velocity.x * Time.fixedDeltaTime, c.bounds.min.y + snapdist/2),
+			Vector2.down,
+			snapdist);
+		Debug.DrawRay(new Vector2(c.bounds.max.x + 2 * r.velocity.x * Time.fixedDeltaTime, c.bounds.min.y + snapdist/2),
+		              Vector2.down * snapdist);
+		Debug.Log("Height diff: " + hit.distance);
+		if(hit.collider != null && hit.distance > 0)//hit something within the ray
+		{
+			transform.position +=
+				new Vector3(
+					0,
+					snapdist/2 + 0.02f - hit.distance,
+					0);
+		}
+	}
+
 	/// <summary>
 	/// Checks the ground by performign two raycast checks on either side of the box.
 	/// </summary>
@@ -136,6 +170,10 @@ public class PlayerMotor : MonoBehaviour
 				transform.position - new Vector3(-c.bounds.size.x / 2, c.bounds.size.y / 2 + 0.005f),
 				Vector2.down,		 
 				0.1f);
+		}
+		else
+		{
+			stepUpToGround();
 		}
 
 		grounded = onGround;

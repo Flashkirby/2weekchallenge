@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 /// <summary>
-/// Modules that controls the action of falling from a height.
+/// Module that controls the action of falling from a height.
 /// Rolls if condition is met
 /// Lose speed and stumble or stop otherwise
+/// Can also die which should trigger a game over
 /// 
 /// If player taps within the grace period for landing
 /// the player will not lose speed.
@@ -21,6 +22,7 @@ public class PlayerActionRoll : MonoBehaviour
 	public bool rollOnLand;
 	private bool isLandingStumbled;
 	private bool isLandingHard;
+	private bool isLandingDeath;
 	private float actionTime;
 	
 	void Start () 
@@ -58,7 +60,7 @@ public class PlayerActionRoll : MonoBehaviour
 
 		if(motor.grounded && !motor.lastGrounded && motor.autoBehaviour)
 		{
-			if (rollOnLand || isLandingStumbled || isLandingHard)
+			if (rollOnLand || isLandingStumbled || isLandingHard || isLandingDeath)
 			{
 				motor.actionActive = myAction;
 				actionTime = 0;
@@ -69,48 +71,56 @@ public class PlayerActionRoll : MonoBehaviour
 		{
 			motor.autoBehaviour = false;
 			bool done = false;
-			if(isLandingHard)
+
+			if(isLandingDeath)
 			{
-				if(!rollOnLand)
-				{
-					landHard();
-					done = actionTime > Settings.plFallHardTimeMax;
-				}
-				else
-				{
-					landHardRoll();
-					done = actionTime > Settings.plRollTimeMax;
-				}
+				landDeath();
 			}
 			else
 			{
-				if(isLandingStumbled)
+				if(isLandingHard)
 				{
 					if(!rollOnLand)
 					{
-						landStumble();
-						done = actionTime > Settings.plFallStumbleTimeMax;
+						landHard();
+						done = actionTime > Settings.plFallHardTimeMax;
 					}
 					else
 					{
-						landShortRoll();
-						done = actionTime > Settings.plRollShortTimeMax;
+						landHardRoll();
+						done = actionTime > Settings.plRollTimeMax;
 					}
 				}
 				else
 				{
-					done = true;
+					if(isLandingStumbled)
+					{
+						if(!rollOnLand)
+						{
+							landStumble();
+							done = actionTime > Settings.plFallStumbleTimeMax;
+						}
+						else
+						{
+							landShortRoll();
+							done = actionTime > Settings.plRollShortTimeMax;
+						}
+					}
+					else
+					{
+						done = true;
+					}
 				}
-			}
 
-			if(done)
-			{
-				motor.actionActive = 0;
-				motor.autoBehaviour = true;
-				resetRollVariables();
+				if(done)
+				{
+					motor.actionActive = 0;
+					motor.autoBehaviour = true;
+					resetRollVariables();
+				}
+				
+				actionTime += Time.deltaTime;
 			}
-			
-			actionTime += Time.deltaTime;
 		}
 	}
 	
@@ -152,6 +162,7 @@ public class PlayerActionRoll : MonoBehaviour
 		rollOnLand = false;
 		isLandingStumbled = false;
 		isLandingHard = false;
+		isLandingDeath = false;
 		graceInputTime = -Settings.plGraceInputCoolTime;
 	}
 	
@@ -173,6 +184,10 @@ public class PlayerActionRoll : MonoBehaviour
 				if (r.velocity.y < -Settings.plFallHardVel)
 				{
 					isLandingHard = true;
+				}
+				if(r.velocity.y < -Settings.plFallDeathVel)
+				{
+					isLandingDeath = true;
 				}
 			}
 			// in such as case where we magically go upwards, forget about this
@@ -251,5 +266,10 @@ public class PlayerActionRoll : MonoBehaviour
 			r.velocity = new Vector2(r.velocity.x * Settings.plRollSlowDown, r.velocity.y);
 		}
 		motor.setAccelerate(Settings.plRollAccel);
+	}
+
+	private void landDeath()
+	{
+		r.velocity = new Vector2(r.velocity.x * 0.2f, r.velocity.y);
 	}
 }

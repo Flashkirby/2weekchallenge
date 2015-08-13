@@ -5,7 +5,7 @@ using System.Collections;
 /// </summary>
 public class PlayerMotor : MonoBehaviour 
 {
-	public Material[] mat;
+	//public Material[] mat;
 
 	private Rigidbody2D r;
 	private BoxCollider2D c;
@@ -148,6 +148,7 @@ public class PlayerMotor : MonoBehaviour
 			Debug.DrawRay(transform.position + new Vector3(c.bounds.size.x/2, -c.bounds.size.y/2 - 0.001f),
 			              Vector2.down * 0.1f,
 		              Color.red);
+			/*
 			if(grounded)
 			{
 				Renderer rend = GetComponent<Renderer>();
@@ -158,6 +159,7 @@ public class PlayerMotor : MonoBehaviour
 				Renderer rend = GetComponent<Renderer>();
 				rend.material = mat[1];
 			}
+			*/
 		}
 	}
 	

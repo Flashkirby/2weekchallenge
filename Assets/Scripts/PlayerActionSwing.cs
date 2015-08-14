@@ -142,6 +142,7 @@ public class PlayerActionSwing : MonoBehaviour
 	private void swingAction()
 	{
 		motor.autoBehaviour = false;
+		transform.GetChild(0).GetComponent<Collider2D>().enabled = false;
 		motor.grounded = false;
 		Vector2 position2D = new Vector2(transform.position.x, transform.position.y);
 
@@ -180,6 +181,7 @@ public class PlayerActionSwing : MonoBehaviour
 		{
 			motor.actionActive = 0;
 			motor.autoBehaviour = true;
+			transform.GetChild(0).GetComponent<Collider2D>().enabled = true;
 			motor.jumpTime = 0;
 		}
 

@@ -69,6 +69,7 @@ public class PlayerMotor : MonoBehaviour
 			//stop jumplogic
 			jumpTime = 0;
 		}
+		stepUpToGround();
 	}
 
 	void OnGUI ()
@@ -132,21 +133,34 @@ public class PlayerMotor : MonoBehaviour
 
 	private void stepUpToGround()
 	{
-		float snapdist = 0.4f;
+		//don't run if the feet are disabled for whatever reason
+		if(!transform.GetChild(0).GetComponent<Collider2D>().enabled) return;
+
+
+		float snapdist = 0.3f;
+		Vector2 timeVelo = r.velocity * Time.fixedDeltaTime;
+		if(Settings.devPlayer)
+		{
+			Debug.DrawRay(new Vector2(c.bounds.max.x + 2 * timeVelo.x, c.bounds.min.y + snapdist),
+			              Vector2.down * (snapdist + 0.019f - 2 * Mathf.Min(timeVelo.y,0)));
+		}
 		RaycastHit2D hit = Physics2D.Raycast(
-			new Vector2(c.bounds.max.x + 2 * r.velocity.x * Time.fixedDeltaTime, c.bounds.min.y + snapdist/2),
+			new Vector2(c.bounds.max.x + 2 * timeVelo.x, c.bounds.min.y + snapdist),
 			Vector2.down,
-			snapdist);
-		Debug.DrawRay(new Vector2(c.bounds.max.x + 2 * r.velocity.x * Time.fixedDeltaTime, c.bounds.min.y + snapdist/2),
-		              Vector2.down * snapdist);
-		Debug.Log("Height diff: " + hit.distance);
+			snapdist + 0.019f - 2 * Mathf.Min(timeVelo.y,0));
 		if(hit.collider != null && hit.distance > 0)//hit something within the ray
 		{
-			transform.position +=
+			float setPos = snapdist + 0.019f - hit.distance;
+			//Debug.Log(hit.distance);
+			transform.position =
 				new Vector3(
-					0,
-					snapdist/2 + 0.02f - hit.distance,
-					0);
+					transform.position.x,
+					transform.position.y + setPos,
+					transform.position.z);
+			if(!grounded)
+			{
+				r.velocity = new Vector2(r.velocity.x, 0);
+			}
 		}
 	}
 
@@ -170,10 +184,6 @@ public class PlayerMotor : MonoBehaviour
 				transform.position - new Vector3(-c.bounds.size.x / 2, c.bounds.size.y / 2 + 0.005f),
 				Vector2.down,		 
 				0.1f);
-		}
-		else
-		{
-			stepUpToGround();
 		}
 
 		grounded = onGround;

@@ -91,17 +91,17 @@ public class PlayerActionClimb : MonoBehaviour
 			Debug.DrawRay(transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult / 2), rayStart),
 			              Vector2.down * rayDist,
 			              Color.green);
-			Debug.DrawRay(transform.position + new Vector3(0, c.bounds.size.y * 0.5f),
+			Debug.DrawRay(transform.position + new Vector3(0, rayStart),
 			              Vector2.down * c.bounds.size.y,
 			              Color.green);
 		}
-		/*
+
 		bool canClimb = true;
 		//check no platforms in me
 		RaycastHit2D[] allHits = Physics2D.RaycastAll(
-			transform.position + new Vector3(0, c.bounds.size.y * 0.5f),
+			transform.position + new Vector3(0, rayStart),
 			Vector2.down,
-			c.bounds.size.y);
+			rayDist);
 		foreach (RaycastHit2D hits in allHits)
 		{
 			if(hits.collider != null && !hits.transform.tag.Equals("Player"))
@@ -111,26 +111,28 @@ public class PlayerActionClimb : MonoBehaviour
 		}
 
 		//check ahead to set up cllimbEdge
-		if(canClimb)*/
-		RaycastHit2D hit = Physics2D.Raycast(
-			transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult), rayStart),
-			Vector2.down,
-			rayDist);
-		if(hit.collider != null && hit.distance > 0)//hit something within the ray
+		if(canClimb)
 		{
-			//start climbing that edge
-			climbEdgeInitial(hit);
-		}
-		else
-		{
-			hit = Physics2D.Raycast(
-				transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult / 2), rayStart),
+			RaycastHit2D hit = Physics2D.Raycast(
+				transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult), rayStart),
 				Vector2.down,
 				rayDist);
 			if(hit.collider != null && hit.distance > 0)//hit something within the ray
 			{
 				//start climbing that edge
 				climbEdgeInitial(hit);
+			}
+			else
+			{
+				hit = Physics2D.Raycast(
+					transform.position + new Vector3(c.bounds.size.x * (0.5f + Settings.plClimbReachXMult / 2), rayStart),
+					Vector2.down,
+					rayDist);
+				if(hit.collider != null && hit.distance > 0)//hit something within the ray
+				{
+					//start climbing that edge
+					climbEdgeInitial(hit);
+				}
 			}
 		}
 	}

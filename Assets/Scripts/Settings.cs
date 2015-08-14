@@ -62,6 +62,9 @@ public class Settings {
 	public static float gameBackScreenX = 25f;//the x behind the player we concern with
 	public static float gameScreenX = 75f;//the x in front of the player we concern with
 	public static float gameScreenY = 25f;//the y around the player we concern with
-
+	public static float levelPlatformMaxHeight = 20f;//height after which platforms will be forced downwards
+	public static float levelPlatformMinHeight = 8f;//the height below which further endings can occur
+	public static int levelPlatformBaseStartChance = 4;//1 in x chance of starting
+	public static int levelPlatformBaseEndChance = 10;//1 in x chance of starting
 	#endregion
 }

@@ -60,6 +60,7 @@ public class PlayerActionRoll : MonoBehaviour
 
 		if(motor.grounded && !motor.lastGrounded && motor.autoBehaviour)
 		{
+			//Debug.Log("Yeah " + rollOnLand + "|" + isLandingStumbled + "|" + isLandingHard + "|" + isLandingDeath);
 			if (rollOnLand || isLandingStumbled || isLandingHard || isLandingDeath)
 			{
 				motor.actionActive = myAction;
@@ -175,26 +176,23 @@ public class PlayerActionRoll : MonoBehaviour
 				rollOnLand = true;
 				graceInputTime = 0;
 			}
-			else
-			{
-				if (r.velocity.y < -Settings.plFallStumbleVel)
-				{
-					isLandingStumbled = true;
-				}
-				if (r.velocity.y < -Settings.plFallHardVel)
-				{
-					isLandingHard = true;
-				}
-				if(r.velocity.y < -Settings.plFallDeathVel)
-				{
-					isLandingDeath = true;
-				}
-			}
 			// in such as case where we magically go upwards, forget about this
 			if(r.velocity.y > 0)
 			{
 				resetRollVariables();
 			}
+		}
+		if (r.velocity.y < -Settings.plFallStumbleVel)
+		{
+			isLandingStumbled = true;
+		}
+		if (r.velocity.y < -Settings.plFallHardVel)
+		{
+			isLandingHard = true;
+		}
+		if(r.velocity.y < -Settings.plFallDeathVel)
+		{
+			isLandingDeath = true;
 		}
 	}
 

@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour
 
 	public GameObject PatternStart;
 	public GameObject PatternStraight8;
+	public GameObject PatternGround16Vaults;
 
 	// Use this for initialization
 	void Start () 
@@ -73,7 +74,7 @@ public class GameController : MonoBehaviour
 
 	private void levelGenerate()
 	{
-		GameObject prefab = PatternStraight8;
+		GameObject prefab = PatternGround16Vaults;
 		for (int i = 0; i < 5; i++)
 		{
 			if(lastPatternBaseEnd.x < gameScreen.max.x)

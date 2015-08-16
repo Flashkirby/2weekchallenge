@@ -177,7 +177,7 @@ public class PlayerActionRoll : MonoBehaviour
 				graceInputTime = 0;
 			}
 			// in such as case where we magically go upwards, forget about this
-			if(r.velocity.y > 0)
+			if(r.velocity.y > -Settings.plFallStumbleVel)
 			{
 				resetRollVariables();
 			}

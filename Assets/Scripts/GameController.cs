@@ -100,6 +100,11 @@ public class GameController : MonoBehaviour
 		timer += Time.deltaTime;
 	}
 
+	void OnGUI ()
+	{
+		GUI.Label(new Rect(Screen.width/2, 0, Screen.width, Screen.height), "Seed: "+levelSeed);
+	}
+
 	private void levelGenerateInitial()
 	{
 		placePrefab(PatternStart);

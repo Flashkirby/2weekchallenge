@@ -52,10 +52,10 @@ public class Settings {
 	#endregion
 
 	#region camera
-	public static float camXOffset = 8;
+	public static float camXOffset = 6;
 	public static float camYOffset = 0;
 	public static float camZOffset = -20f;
-	public static float camSize = 10;
+	public static float camSize = 7;
 	#endregion
 
 	#region level gen

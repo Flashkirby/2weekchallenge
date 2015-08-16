@@ -41,16 +41,6 @@ public class PlayerActionClimb : MonoBehaviour
 			graceInputTime = Settings.plGraceInputMaxTime;
 		}
 
-		if(motor.actionActive == myAction)
-		{
-			graceInputTime = -Settings.plGraceInputCoolTime;
-			climbEdge();
-		}
-		else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
-		{
-			graceInputTime = -Settings.plGraceInputCoolTime;
-		}
-
 		graceInputTime -= Time.deltaTime;
 	}
 
@@ -66,6 +56,16 @@ public class PlayerActionClimb : MonoBehaviour
 			{
 				graceInputTime = 0;
 			}
+		}
+		
+		if(motor.actionActive == myAction)
+		{
+			graceInputTime = -Settings.plGraceInputCoolTime;
+			climbEdge();
+		}
+		else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
+		{
+			graceInputTime = -Settings.plGraceInputCoolTime;
 		}
 	}
 	

@@ -31,12 +31,6 @@ public class PlayerActionKickOff : MonoBehaviour
 		{
 			graceInputTime = Settings.plGraceInputMaxTime;
 		}
-		
-		if(motor.actionActive == myAction)
-		{
-			graceInputTime = -Settings.plGraceInputCoolTime;
-			kickAction();
-		}
 		else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
 		{
 			graceInputTime = -Settings.plGraceInputCoolTime;
@@ -60,6 +54,12 @@ public class PlayerActionKickOff : MonoBehaviour
 			{
 				graceInputTime = 0;
 			}
+		}
+		
+		if(motor.actionActive == myAction)
+		{
+			graceInputTime = -Settings.plGraceInputCoolTime;
+			kickAction();
 		}
 	}
 

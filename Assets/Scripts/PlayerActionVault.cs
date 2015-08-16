@@ -29,12 +29,6 @@ public class PlayerActionVault : MonoBehaviour
 		{
 			graceInputTime = Settings.plGraceInputMaxTime;
 		}
-		
-		if(motor.actionActive == myAction)
-		{
-			graceInputTime = -Settings.plGraceInputCoolTime;
-			vaultAction();
-		}
 		else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
 		{
 			graceInputTime = -Settings.plGraceInputCoolTime;
@@ -58,6 +52,12 @@ public class PlayerActionVault : MonoBehaviour
 			{
 				graceInputTime = 0;
 			}
+		}
+		
+		if(motor.actionActive == myAction)
+		{
+			graceInputTime = -Settings.plGraceInputCoolTime;
+			vaultAction();
 		}
 	}
 	

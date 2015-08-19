@@ -14,6 +14,7 @@ public class PlayerActionKickOff : MonoBehaviour
 	private Vector2 edgePointInverse;
 
 	private float actionTime;
+	public float ActionTime{get{return actionTime;}}
 	private float actionSnapSpeed = 20f;
 	private float saveVelocityX;
 	private float saveVelocityNormalX;

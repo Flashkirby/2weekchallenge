@@ -15,6 +15,7 @@ public class PlayerActionSwing : MonoBehaviour
 	//private DistanceJoint2D joint;
 
 	private float actionAngle;
+	public float ActionAngle{get{return actionAngle;}}
 	private float actionSnapSpeed = 50f;
 	private float autoSnapTime;
 	private float swingSpeed;

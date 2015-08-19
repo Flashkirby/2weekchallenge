@@ -135,22 +135,23 @@ public class PlayerMotor : MonoBehaviour
 	{
 		//don't run if the feet are disabled for whatever reason
 		if(!transform.GetChild(0).GetComponent<Collider2D>().enabled) return;
-
+		//don't run if moving up
+		if(r.velocity.y > 0) return;
 
 		float snapdist = 0.3f;
 		Vector2 timeVelo = r.velocity * Time.fixedDeltaTime;
 		if(Settings.devPlayer)
 		{
 			Debug.DrawRay(new Vector2(c.bounds.max.x + 2 * timeVelo.x, c.bounds.min.y + snapdist),
-			              Vector2.down * (snapdist + 0.019f - 2 * Mathf.Min(timeVelo.y,0)));
+			              Vector2.down * (snapdist - 2 * Mathf.Min(timeVelo.y,0)));
 		}
 		RaycastHit2D hit = Physics2D.Raycast(
 			new Vector2(c.bounds.max.x + 2 * timeVelo.x, c.bounds.min.y + snapdist),
 			Vector2.down,
-			snapdist + 0.019f - 2 * Mathf.Min(timeVelo.y,0));
+			snapdist - 2 * Mathf.Min(timeVelo.y,0));
 		if(hit.collider != null && hit.distance > 0)//hit something within the ray
 		{
-			float setPos = snapdist + 0.019f - hit.distance;
+			float setPos = snapdist - hit.distance;
 			//Debug.Log(hit.distance);
 			transform.position =
 				new Vector3(
@@ -171,31 +172,46 @@ public class PlayerMotor : MonoBehaviour
 	{
 		lastGrounded = grounded;
 		//At some point need to check platforms only if we're going downwards
-
+		bool onGround = false;
+		
 		//check left side
-		bool onGround = Physics2D.Raycast(
-			transform.position - new Vector3(c.bounds.size.x / 2, c.bounds.size.y / 2 + 0.005f),
+		RaycastHit2D[] allHits = Physics2D.RaycastAll(
+			transform.position - new Vector3(c.bounds.size.x / 2 - 0.02f, c.bounds.size.y / 2 - 0.025f),
 			Vector2.down,
-			0.1f);
+			0.05f);
+		foreach (RaycastHit2D hits in allHits)
+		{
+			if(hits.collider != null && !hits.transform.tag.Equals("Player"))
+			{
+				onGround = true;
+			}
+		}
 		//check right side if left side is not fine
 		if(!onGround)
 		{
-			onGround = Physics2D.Raycast(
-				transform.position - new Vector3(-c.bounds.size.x / 2, c.bounds.size.y / 2 + 0.005f),
+			allHits = Physics2D.RaycastAll(
+				transform.position - new Vector3(-c.bounds.size.x / 2 + 0.02f, c.bounds.size.y / 2 - 0.025f),
 				Vector2.down,		 
-				0.1f);
+				0.05f);
+			foreach (RaycastHit2D hits in allHits)
+			{
+				if(hits.collider != null && !hits.transform.tag.Equals("Player"))
+				{
+					onGround = true;
+				}
+			}
 		}
 
 		grounded = onGround;
 
 		if(Settings.devPlayer)
 		{
-			Debug.DrawRay(transform.position + new Vector3(-c.bounds.size.x/2, -c.bounds.size.y/2 - 0.001f),
-			              Vector2.down * 0.1f,
+			Debug.DrawRay(transform.position + new Vector3(c.bounds.size.x/2 - 0.02f, -c.bounds.size.y/2 + 0.025f),
+			              Vector2.down * 0.05f,
 			              Color.red);
-			Debug.DrawRay(transform.position + new Vector3(c.bounds.size.x/2, -c.bounds.size.y/2 - 0.001f),
-			              Vector2.down * 0.1f,
-		              Color.red);
+			Debug.DrawRay(transform.position + new Vector3(-c.bounds.size.x/2 + 0.02f, -c.bounds.size.y/2 + 0.025f),
+			              Vector2.down * 0.05f,
+			              Color.red);
 			/*
 			if(grounded)
 			{

@@ -1,10 +1,14 @@
 fileFormatVersion: 2
-guid: 21fd84bdb2645c44897357af5d411e97
-timeCreated: 1439931594
+guid: db4abf5daa248cf4e8fdbb91ff5c755f
+timeCreated: 1440001120
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: rgRunning_0
+    21300000: rgRunning 1_0
+    21300002: rgRunning 1_1
+    21300004: rgRunning 1_2
+    21300006: rgRunning 1_3
+    21300008: rgRunning 1_4
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -20,7 +24,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: .25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   grayScaleToAlpha: 0
   generateCubemap: 0
   cubemapConvolution: 0
@@ -38,11 +42,11 @@ TextureImporter:
   lightmap: 0
   rGBM: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 9
-  spritePivot: {x: .5, y: .25}
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 128
   alphaIsTransparency: 1
@@ -50,15 +54,45 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites:
-    - name: rgRunning_0
+    - name: rgRunning 1_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 256
         height: 512
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: .5, y: .25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: rgRunning 1_1
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 256
+        height: 512
+      alignment: 9
+      pivot: {x: .5, y: .25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: rgRunning 1_2
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 256
+        height: 512
+      alignment: 9
+      pivot: {x: .5, y: .25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: rgRunning 1_3
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 256
+        height: 512
+      alignment: 9
+      pivot: {x: .5, y: .25}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

@@ -35,7 +35,7 @@ public class GameController : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		player = findPlayer();;//in case we grab the feet first
+		player = findPlayer();//in case we grab the feet first
 		lastPatternBaseEnd = new Vector3(player.transform.position.x, player.GetComponent<Collider2D>().bounds.min.y, 0);
 		gameScreen = new Rect(player.transform.position.x - Settings.gameBackScreenX,
 		                      player.transform.position.y + Settings.gameScreenY / 2,
@@ -53,11 +53,11 @@ public class GameController : MonoBehaviour
 		timer = 0;
 	}
 
-	private GameObject findPlayer()
+	public static GameObject findPlayer()
 	{
 		foreach(GameObject go in GameObject.FindGameObjectsWithTag("Player"))
 		{
-			if(go.layer.Equals(LayerMask.NameToLayer("Default")))
+			if(go.layer.Equals(LayerMask.NameToLayer("Default")) && go.activeInHierarchy)
 			{
 				return go;
 			}

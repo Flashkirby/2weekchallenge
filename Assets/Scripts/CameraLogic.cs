@@ -7,7 +7,7 @@ public class CameraLogic : MonoBehaviour {
 	Camera cam;
 	// Use this for initialization
 	void Start () {
-		playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+		playerTransform = GameController.findPlayer().transform;
 		playerLastPosX = playerTransform.position.x;
 		cam = GetComponent<Camera>();
 	}

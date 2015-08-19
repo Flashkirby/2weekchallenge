@@ -8,8 +8,15 @@ public class PlayerStates : MonoBehaviour
 	private BoxCollider2D c;
 	private PlayerMotor motor;
 	private SpriteRenderer rend;
+	private Animator anim;
 
-	public Sprite stateRunning;
+	private PlayerActionClimb actClimb;
+	private PlayerActionRoll actLand;
+	private PlayerActionVault actVault;
+	private PlayerActionKickOff actKick;
+	private PlayerActionSwing actSwing;
+
+	//public Sprite stateRunning;
 	public Sprite stateCrouch;
 	public Sprite stateSwing;
 	public Sprite stateVault;
@@ -21,6 +28,13 @@ public class PlayerStates : MonoBehaviour
 		c = gameObject.GetComponent<BoxCollider2D>();
 		motor = GetComponent<PlayerMotor>();
 		rend = GetComponent<SpriteRenderer>();
+		anim = GetComponent<Animator>();
+
+		actClimb = GetComponent<PlayerActionClimb>();
+		actLand = GetComponent<PlayerActionRoll>();
+		actVault = GetComponent<PlayerActionVault>();
+		actKick = GetComponent<PlayerActionKickOff>();
+		actSwing = GetComponent<PlayerActionSwing>();
 	}
 	
 	// Update is called once per frame
@@ -42,7 +56,8 @@ public class PlayerStates : MonoBehaviour
 			rend.sprite = stateCrouch;
 			break;
 		case 3://vault
-			rend.sprite = stateVault;
+			float progress = actVault.ActionTime / Settings.plVaultTimeMax;
+			anim.Play("vault", 0, progress);
 			break;
 		case 4://kickup
 			rend.sprite = stateCrouch;
@@ -51,7 +66,16 @@ public class PlayerStates : MonoBehaviour
 			rend.sprite = stateSwing;
 			break;
 		default:
-			rend.sprite = stateRunning;
+			if(motor.grounded)
+			{
+				anim.Play("running");
+				anim.SetFloat("SpeedMult",r.velocity.x * 0.16f);
+			}
+			else
+			{
+				anim.Play("jump");
+				anim.SetInteger("ActionState", 1);
+			}
 			break;
 		}
 	}

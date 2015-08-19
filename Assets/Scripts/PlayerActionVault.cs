@@ -13,6 +13,7 @@ public class PlayerActionVault : MonoBehaviour
 	private Vector2 edgePoint;
 
 	private float actionTime;
+	public float ActionTime{get{return actionTime;}}
 	private float actionSnapSpeed = 50f;
 	private float saveVelocityX;
 
@@ -129,7 +130,7 @@ public class PlayerActionVault : MonoBehaviour
 		Vector2 targetPosition;
 
 		targetPosition = new Vector2 (
-			edgePoint.x + c.bounds.size.x * (-0.5f + progress),
+			edgePoint.x + c.bounds.size.x * (-0.5f + progress * 1.8f),
 			edgePoint.y + c.bounds.extents.y
 			);
 		
@@ -142,11 +143,12 @@ public class PlayerActionVault : MonoBehaviour
 		if(actionTime > Settings.plVaultTimeMax)
 		{
 			transform.position = new Vector2(
-				edgePoint.x + c.bounds.size.x * 0.5f,
+				edgePoint.x + c.bounds.size.x * 1.3f,
 				edgePoint.y + c.bounds.extents.y);
-			r.velocity = new Vector2(saveVelocityX, 0);
+			r.velocity = new Vector2(saveVelocityX, -2);
 
 			motor.actionActive = 0;
+			motor.jumpTime = 0;
 			motor.autoBehaviour = true;
 		}
 

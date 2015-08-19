@@ -24,7 +24,13 @@ public class PlayerActionRoll : MonoBehaviour
 	private bool isLandingHard;
 	private bool isLandingDeath;
 	private float actionTime;
-	
+
+	public float ActionTime{get{return actionTime;}}
+	public bool IsRollOnLand{get{return rollOnLand;}}
+	public bool IsLandingStumbled{get{return isLandingStumbled;}}
+	public bool IsLandingHard{get{return isLandingHard;}}
+	public bool IsLandingDeath{get{return isLandingDeath;}}
+
 	void Start () 
 	{
 		r = gameObject.GetComponent<Rigidbody2D>();

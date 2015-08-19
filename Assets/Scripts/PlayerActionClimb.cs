@@ -21,6 +21,7 @@ public class PlayerActionClimb : MonoBehaviour
 	private Vector2 edgePoint;
 
 	private float actionTime;
+	public float ActionTime{get{return actionTime;}}
 	private float actionSnapSpeed = 50f;
 	private float autoSnapTime;
 	private float saveVelocityX;

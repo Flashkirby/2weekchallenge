@@ -293,6 +293,7 @@ public class GameController : MonoBehaviour
 		{
 			if(go.activeInHierarchy && go.transform.position.x < gameScreen.x)
 			{
+				//Debug.Log("destroying " + go.name + " at location " + go.transform.position.x + "/" + gameScreen.x);
 				Destroy(go);
 			}
 		}

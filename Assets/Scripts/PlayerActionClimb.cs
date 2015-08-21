@@ -15,7 +15,7 @@ public class PlayerActionClimb : MonoBehaviour
 	private BoxCollider2D c;
 	private PlayerMotor motor;
 
-	private float graceInputTime;
+	//private float graceInputTime;
 	private float rayStart;
 	private float rayDist;
 	private Vector2 edgePoint;
@@ -37,37 +37,37 @@ public class PlayerActionClimb : MonoBehaviour
 	}
 
 	void Update () {
-		if(GlobalInput.ClickDown() && graceInputTime <= -Settings.plGraceInputCoolTime)
-		{
-			graceInputTime = Settings.plGraceInputMaxTime;
-		}
+		//if(GlobalInput.ClickDown() && graceInputTime <= -Settings.plGraceInputCoolTime)
+		//{
+		//	graceInputTime = Settings.plGraceInputMaxTime;
+		//}
 
-		graceInputTime -= Time.deltaTime;
+		//graceInputTime -= Time.deltaTime;
 	}
 
 	void FixedUpdate()
 	{
-		if(graceInputTime > 0 && motor.actionActive == 0)
+		//if(graceInputTime > 0 && motor.actionActive == 0)
+		//{
+		if(GlobalInput.Click()&& motor.actionActive == 0)
 		{
-			if(GlobalInput.Click())
-			{
-				checkEdges();
-			}
-			else
-			{
-				graceInputTime = 0;
-			}
+			checkEdges();
 		}
+		//	else
+		//	{
+		//		graceInputTime = 0;
+		//	}
+		//}
 		
 		if(motor.actionActive == myAction)
 		{
-			graceInputTime = -Settings.plGraceInputCoolTime;
+		//	graceInputTime = -Settings.plGraceInputCoolTime;
 			climbEdge();
 		}
-		else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
-		{
-			graceInputTime = -Settings.plGraceInputCoolTime;
-		}
+		//else if(motor.actionActive != 0 && graceInputTime > -Settings.plGraceInputCoolTime)
+		//{
+		//	graceInputTime = -Settings.plGraceInputCoolTime;
+		//}
 	}
 	
 	void OnGUI ()

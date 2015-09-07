@@ -6,6 +6,7 @@ public class CameraLogic : MonoBehaviour
 	public Vector3 CameraVelocity{get{return camVel;}}
 	private Vector3 camVel;
 	private Vector3 lastPosition;
+	private float realVelX;
 
 	private Transform playerTransform;
 	private Camera cam;
@@ -26,10 +27,17 @@ public class CameraLogic : MonoBehaviour
 			Settings.camYOffset, 
 			Settings.camZOffset);
 		cam.orthographicSize = Settings.camSize;
-		*/
-		float realVelX = (playerTransform.position.x - lastPosition.x) / Time.fixedDeltaTime;
+    	*/
+		
+		float smoothVelX = realVelX;
+		realVelX = (playerTransform.position.x - lastPosition.x) / Time.fixedDeltaTime;
+		smoothVelX = (realVelX + smoothVelX * 2) / 3;
+
+		Debug.Log(realVelX + " | " + smoothVelX);
+
 		float camS = (Settings.camSize * 0.5f) 
-			+ Settings.camSize * realVelX * 0.06f;
+			+ Settings.camSize * smoothVelX * 0.06f;
+
 		cam.orthographicSize = (9 * cam.orthographicSize + camS) / 10f;
 
 		float moveY = Settings.camYOffset + playerTransform.position.y

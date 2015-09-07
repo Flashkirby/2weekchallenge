@@ -244,4 +244,9 @@ public class PlayerMotor : MonoBehaviour
 		}
 		r.velocity = new Vector2(velX, r.velocity.y);
 	}
+
+	public void setRotation(float angDeg)
+	{
+		transform.Rotate(Vector3.forward, angDeg - transform.rotation.eulerAngles.z);
+	}
 }

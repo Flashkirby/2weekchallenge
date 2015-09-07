@@ -47,7 +47,7 @@ public class Settings {
 	public static float plKickJumpBonusVel = 1.2f; //bonus multiplier to the velocity
 	public static float plSwingSnapDist = 2.5f; //distance you can grab swing from
 	public static float plSwingRadius = 2f; //distance from swing player maintains
-	public static float plSwingAutoReleaseAng = -70; //angle that swing releases at, only valid between -90 and 90
+	public static float plSwingAutoReleaseAng = -50; //angle that swing releases at, only valid between -90 and 90
 
 	#endregion
 

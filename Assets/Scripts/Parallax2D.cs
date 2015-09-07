@@ -23,6 +23,7 @@ public class Parallax2D : MonoBehaviour {
 		fillerObj.transform.SetParent(transform);
 		SpriteRenderer fillRend = fillerObj.AddComponent<SpriteRenderer>();
 		fillRend.sprite = filler;
+		fillRend.sortingOrder = rend.sortingOrder;
 		fillerObj.transform.localPosition = Vector3.zero;
 		fillerObj.transform.localScale = new Vector3(rend.sprite.bounds.size.x / fillRend.sprite.bounds.size.x, 1000, 1);
 	}

@@ -175,6 +175,8 @@ public class PlayerActionSwing : MonoBehaviour
 			transform.position = targetPosition;
 		}
 
+		motor.setRotation(-angleInv * Mathf.Rad2Deg);
+
 		if((r.velocity.x < 1f && transform.position.x > swingingPoint.x)
 		   || Settings.plSwingAutoReleaseAng >= angleInv * Mathf.Rad2Deg
 		   || !GlobalInput.Click()
@@ -184,6 +186,8 @@ public class PlayerActionSwing : MonoBehaviour
 			motor.autoBehaviour = true;
 			transform.GetChild(0).GetComponent<Collider2D>().enabled = true;
 			motor.jumpTime = 0;
+			
+			motor.setRotation(0 * Mathf.Rad2Deg);
 		}
 
 		autoSnapTime -= Time.deltaTime;
@@ -200,6 +204,12 @@ public class PlayerActionSwing : MonoBehaviour
 		*/
 	}
 
+	/// <summary>
+	/// Gets the angle from one point to another.
+	/// </summary>
+	/// <returns>The angle RAD.</returns>
+	/// <param name="start">Start.</param>
+	/// <param name="end">End.</param>
 	private float GetAngleRad(Vector2 start, Vector2 end)
 	{
 		float rad = Mathf.Atan2(end.x - start.x, end.y - start.y);

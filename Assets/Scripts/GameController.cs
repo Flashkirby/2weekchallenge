@@ -38,7 +38,7 @@ public class GameController : MonoBehaviour
 		player = findPlayer();//in case we grab the feet first
 		lastPatternBaseEnd = new Vector3(player.transform.position.x, player.GetComponent<Collider2D>().bounds.min.y, 0);
 		gameScreen = new Rect(player.transform.position.x - Settings.gameBackScreenX,
-		                      player.transform.position.y + Settings.gameScreenY / 2,
+		                      player.transform.position.y - Settings.gameScreenY / 2,
 		                      Settings.gameScreenX,
 		                      Settings.gameScreenY);
 		lastPatternPlatEnd = new Vector3();
@@ -93,7 +93,7 @@ public class GameController : MonoBehaviour
 	private void gameUpdate()
 	{
 		gameScreen = new Rect(player.transform.position.x - Settings.gameBackScreenX,
-		                      player.transform.position.y + Settings.gameScreenY / 2,
+		                      player.transform.position.y - Settings.gameScreenY / 2,
 		                      Settings.gameScreenX,
 		                      Settings.gameScreenY);
 
@@ -291,9 +291,13 @@ public class GameController : MonoBehaviour
 	{
 		foreach(GameObject go in GameObject.FindObjectsOfType<GameObject>())
 		{
-			if(go.activeInHierarchy && go.transform.position.x < gameScreen.x)
+			if(go.activeInHierarchy && 
+			   (go.transform.position.x < gameScreen.x
+			   ||go.transform.position.y < gameScreen.yMin)
+				)
 			{
 				//Debug.Log("destroying " + go.name + " at location " + go.transform.position.x + "/" + gameScreen.x);
+				//Debug.Log("destroying " + go.name + " at location " + go.transform.position.y + "/" + gameScreen.y);
 				Destroy(go);
 			}
 		}

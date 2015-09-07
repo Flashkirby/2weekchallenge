@@ -33,7 +33,7 @@ public class CameraLogic : MonoBehaviour
 		realVelX = (playerTransform.position.x - lastPosition.x) / Time.fixedDeltaTime;
 		smoothVelX = (realVelX + smoothVelX * 2) / 3;
 
-		Debug.Log(realVelX + " | " + smoothVelX);
+		//Debug.Log(realVelX + " | " + smoothVelX);
 
 		float camS = (Settings.camSize * 0.5f) 
 			+ Settings.camSize * smoothVelX * 0.06f;

@@ -48,6 +48,8 @@ public class Settings {
 	public static float plSwingSnapDist = 2.5f; //distance you can grab swing from
 	public static float plSwingRadius = 2f; //distance from swing player maintains
 	public static float plSwingAutoReleaseAng = -50; //angle that swing releases at, only valid between -90 and 90
+	public static float plUprightAngled = 0.05f;//angle by default. May be angled upwards to prevent terrain sticking
+	public static float plObstacleSlowdownMult = 0.5f;//slowdown when hitting objects
 
 	#endregion
 
@@ -61,7 +63,7 @@ public class Settings {
 	#region level gen
 	public static float gameBackScreenX = 25f;//the x behind the player we concern with
 	public static float gameScreenX = 75f;//the x in front of the player we concern with
-	public static float gameScreenY = 25f;//the y around the player we concern with
+	public static float gameScreenY = 50f;//the y around the player we concern with
 	public static float levelPlatformMaxHeight = 20f;//height after which platforms will be forced downwards
 	public static float levelPlatformMinHeight = 8f;//the height below which further endings can occur
 	public static int levelPlatformBaseStartChance = 4;//1 in x chance of starting

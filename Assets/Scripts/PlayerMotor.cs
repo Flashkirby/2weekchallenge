@@ -15,8 +15,16 @@ public class PlayerMotor : MonoBehaviour
 	public bool grounded;
 	public bool lastGrounded;
 	public Vector2 lastVelocity;
+	/// <summary>
+	/// The numnber of the current action being performed by the player
+	/// See PlayerStates.cs for numbers and meanings
+	/// default 0, unless in use
+	/// </summary>
 	public int actionActive;
-	public bool autoBehaviour;// move normally, not in an action
+	/// <summary>
+	/// Bool to control engagement in normal physics behaviour, not in any special actions
+	/// </summary>
+	public bool autoBehaviour;
 	public float jumpTime;// current jump time. resets on landing
 
 	// Use this for initialization

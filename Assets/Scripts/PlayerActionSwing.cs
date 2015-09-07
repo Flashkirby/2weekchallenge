@@ -92,7 +92,7 @@ public class PlayerActionSwing : MonoBehaviour
 		
 		foreach(GameObject go in GameObject.FindGameObjectsWithTag("Swing"))
 		{
-			Rigidbody2D swingR = go.GetComponent<Rigidbody2D>();
+			//Rigidbody2D swingR = go.GetComponent<Rigidbody2D>();
 			checkPoint = new Vector2(go.transform.position.x, go.transform.position.y);
 			if(checkPoint.x >= transform.position.x)
 			{
@@ -187,7 +187,7 @@ public class PlayerActionSwing : MonoBehaviour
 			transform.GetChild(0).GetComponent<Collider2D>().enabled = true;
 			motor.jumpTime = 0;
 			
-			motor.setRotation(0 * Mathf.Rad2Deg);
+			motor.setRotation(Settings.plUprightAngled);
 		}
 
 		autoSnapTime -= Time.deltaTime;

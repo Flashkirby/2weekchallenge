@@ -1,12 +1,14 @@
 fileFormatVersion: 2
 guid: fb4ffd49190eb3041976b4100c1dec78
-timeCreated: 1439566403
+timeCreated: 1443052193
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - PatternStart: {fileID: 145316, guid: cd00cba1691b84d4e9cc77d680701960, type: 2}
   - PatternStraight8: {fileID: 154930, guid: a2ced01911a99ed4abe8908040b52602, type: 2}
+  - PatternNew: {fileID: 143132, guid: f3708ba99c2381f439e7f90c2ecf27eb, type: 2}
+  - PatternOld: {fileID: 108168, guid: b5eabf31a8488b343b91a83c2492d610, type: 2}
   - PatternRampDown8: {fileID: 182748, guid: 245f323500710c24eb2f1110d14c27a6, type: 2}
   - PatternSwing16: {fileID: 176864, guid: 139447ecd08e3db4593357d0a1e65a27, type: 2}
   - PatternPlatfStartKickOff16: {fileID: 127400, guid: 0938d333279a4a441a3c57c50eb42d4b,

@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// TODO
+/// Why is random platforms appearing
+/// see seed -578153728
+/// </summary>
+
 public class GameController : MonoBehaviour 
 {
 	private GameObject player;
@@ -22,9 +28,14 @@ public class GameController : MonoBehaviour
 	private bool platformEnding;//currently trying to resolve platforms
 	private float patternHeight;//current prefab height, stops platforms spawning here
 
+	private int patternStyle;//used to denote theme or style of current base and platforms.
+	private int baseLength;//current length of the base (since last gap)
+
 	#region Patterns
 	public GameObject PatternStart;
 	public GameObject PatternStraight8;
+	public GameObject PatternNew;
+	public GameObject PatternOld;
 	public GameObject PatternRampDown8;
 	public GameObject PatternSwing16;
 	public GameObject PatternPlatfStartKickOff16;
@@ -44,15 +55,20 @@ public class GameController : MonoBehaviour
 		lastPatternPlatEnd = new Vector3();
 
 		if(levelSeed.Equals(0)) levelSeed = (int)((0.5f - Random.value) * int.MaxValue);
+		Debug.Log(levelSeed);
 		levelRandom = new System.Random(levelSeed);
 		platformHeight = -1;
 		platformLength = 0;
 		platformEnding = false;
+		baseLength = 0;
 
-		levelGenerateInitial();
+		levelGenerateInitial(5);
 		timer = 0;
 	}
-
+	/// <summary>
+	/// Gets the top level player tagged object in the scene, aka the main player gameobject
+	/// </summary>
+	/// <returns>The player.</returns>
 	public static GameObject findPlayer()
 	{
 		foreach(GameObject go in GameObject.FindGameObjectsWithTag("Player"))
@@ -69,7 +85,7 @@ public class GameController : MonoBehaviour
 	void Update () 
 	{
 		transform.position = player.transform.position;
-		if(started)
+		if(started) //waiting on first click
 		{
 			gameUpdate();
 			levelGenerate();
@@ -90,6 +106,9 @@ public class GameController : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Moves the active gamescreen and increases the timer.
+	/// </summary>
 	private void gameUpdate()
 	{
 		gameScreen = new Rect(player.transform.position.x - Settings.gameBackScreenX,
@@ -105,50 +124,82 @@ public class GameController : MonoBehaviour
 		GUI.Label(new Rect(Screen.width/2, 0, Screen.width, Screen.height), "Seed: "+levelSeed);
 	}
 
-	private void levelGenerateInitial()
+	/// <summary>
+	/// Generates the initial x pieces of the level.
+	/// </summary>
+	/// <param name="length">Number of parts to generate</param>
+	private void levelGenerateInitial(int length)
 	{
 		placePrefab(PatternStart);
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < length; i++)
 		{
 			levelGenerate();
 		}
 	}
 
+
 	private void levelGenerate()
 	{
+		//no active platform layer
 		if(platformHeight.Equals(-1))
-		{
+		{	//there is a gap between the last pattern and the gamescreen edge that needs to be filled
 			if(lastPatternBaseEnd.x < gameScreen.max.x)
-			{
+			{	//safetycheck
 				if(platformLength <= 0)
-				{
+				{	//start chance is base change, reduces with each check (platform length)
 					if(levelRandom.Next(Settings.levelPlatformBaseStartChance + platformLength) == 0)
 					{
+						//reset platform height and length to starting active value
 						platformHeight = 0;
 						platformLength = 0;
 					}
 					else
 					{
+						//increase chances
 						platformLength--;
 					}
 				}
 
-				placePrefab(PickPrefab());
+				if(baseLength > Settings.levelPatternMinLength
+					&& levelRandom.Next(Settings.levelPatternMaxLength - baseLength) == 0)
+				{
+					//places an edge prefab, followed by another reversed edge prefab in a random style
+					baseLength = 0;
+					placeEdgePrefab(PickEdgePrefabs(false), PickEdgePrefabs(true));
+				}
+				else
+				{
+					//places a prefab now. platform height&length being 0 causes a platform start
+					baseLength++;
+					placePrefab(PickPrefab());
+				}
 			}
 		}
-
-
-		if (platformHeight >= 0
+		//active platform layer, where the platform height is above the minimum
+		if ( platformHeight >= 0
 			|| (platformEnding && platformHeight > Settings.levelPlatformMinHeight))
 		{
-
+			//place base part.
 			if(lastPatternBaseEnd.x < gameScreen.max.x)
 			{
-				placePrefab(PickPrefab());
+				if(baseLength > Settings.levelPatternMinLength
+				   && levelRandom.Next(Settings.levelPatternMaxLength - baseLength) == 0)
+				{
+					//places an edge prefab, followed by another reversed edge prefab in a random style
+					baseLength = 0;
+					placeEdgePrefab(PickEdgePrefabs(false), PickEdgePrefabs(true));
+				}
+				else
+				{
+					//places a prefab now. platform height&length being 0 causes a platform start
+					baseLength++;
+					placePrefab(PickPrefab());
+				}
 			}
-
+			//place a platform.
 			if(lastPatternPlatEnd.x < gameScreen.max.x)
 			{
+				//roll for ending limit using same rules as starting one (see above)
 				if(platformEnding || levelRandom.Next(Settings.levelPlatformBaseEndChance - platformLength) == 0)
 				{
 					platformEnding = true;
@@ -158,10 +209,11 @@ public class GameController : MonoBehaviour
 					platformLength++;
 				}
 
-
+				//places a prefab, will pick downard only ones once platform ending is set to true
 				placePrefabPlat(pickPlatform());
 			}
 		}
+		//platform is under min height and platform is ending.
 		if(platformEnding && platformHeight <= Settings.levelPlatformMinHeight)
 		{
 			platformHeight = -1;
@@ -172,6 +224,11 @@ public class GameController : MonoBehaviour
 
 	}
 
+	/// <summary>
+	/// Places the designated pattern onto the end of the previous pattern, 
+	/// using AttachStart and AttachEnd tags, as well as PlatformEnd Tag
+	/// </summary>
+	/// <param name="pattern">Pattern.</param>
 	private void placePrefab(GameObject pattern)
 	{
 		GameObject go = Instantiate(pattern);
@@ -214,7 +271,26 @@ public class GameController : MonoBehaviour
 		if(attachPlatform != null) lastPatternPlatEnd = attachPlatform.position;
 
 	}
-	
+
+	/// <summary>
+	/// Places two patterns with a feasibly jumpable gap between them.
+	/// </summary>
+	/// <param name="pattern1">Current ending pattern</param>
+	/// <param name="pattern2">New starting pattern</param>
+	private void placeEdgePrefab(GameObject pattern1, GameObject pattern2)
+	{
+		placePrefab(pattern1);
+		lastPatternBaseEnd = lastPatternBaseEnd
+			+ new Vector3(levelRandom.Next(Settings.minJumpClearance, Settings.maxJumpClearance + 1),
+			              levelRandom.Next(Settings.bottomJumpHeight, Settings.topJumpHeight + 1));
+		placePrefab(pattern2);
+	}
+
+	/// <summary>
+	/// Places the designated platform pattern onto the end of the previous platform,
+	/// using platform start and platform end.
+	/// </summary>
+	/// <param name="platform">Platform.</param>
 	private void placePrefabPlat(GameObject platform)
 	{
 		GameObject go = Instantiate(platform);
@@ -245,7 +321,7 @@ public class GameController : MonoBehaviour
 				Collider2D col = go.transform.GetChild(i).GetComponent<Collider2D>();
 				if(col.bounds.max.y < patternHeight)
 				{
-					Debug.Log(go.name + " height " + col.bounds.max.y + " < " + patternHeight);
+					//Debug.Log(go.name + " height " + col.bounds.max.y + " < " + patternHeight);
 					//go.transform.position += new Vector3(0,0.5f);
 					//break;
 					Destroy(go);
@@ -258,6 +334,10 @@ public class GameController : MonoBehaviour
 		platformHeight = lastPatternPlatEnd.y - lastPatternBaseEnd.y;
 	}
 
+	/// <summary>
+	/// Returns a random prefab decided using the current conditions
+	/// </summary>
+	/// <returns>The prefab selected</returns>
 	private GameObject PickPrefab()
 	{
 		//Debug.Log(platformHeight + " | " + platformLength + " | " + platformEnding + " | " + patternHeight);
@@ -278,6 +358,23 @@ public class GameController : MonoBehaviour
 		return PatternStraight8;
 	}
 
+	private GameObject PickEdgePrefabs(bool end)
+	{
+		if(!end)
+		{
+			return PatternOld;
+		}
+		else
+		{
+			patternStyle = 0;
+			return PatternNew;
+		}
+	}
+
+	/// <summary>
+	/// Returns a random platform prefab decided using the current conditions
+	/// </summary>
+	/// <returns>The prefab selected</returns>
 	private GameObject pickPlatform()
 	{
 		if(platformHeight > Settings.levelPlatformMaxHeight || platformEnding)
@@ -287,6 +384,9 @@ public class GameController : MonoBehaviour
 		return PatternPlatStraight8;
 	}
 
+	/// <summary>
+	/// Removes all game objects that are past the left and bottom side of the game screen.
+	/// </summary>
 	private void cleanUpGameObjects()
 	{
 		foreach(GameObject go in GameObject.FindObjectsOfType<GameObject>())

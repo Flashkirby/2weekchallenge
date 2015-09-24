@@ -47,7 +47,7 @@ public class Settings {
 	public static float plKickJumpBonusVel = 1.2f; //bonus multiplier to the velocity
 	public static float plSwingSnapDist = 2.5f; //distance you can grab swing from
 	public static float plSwingRadius = 2f; //distance from swing player maintains
-	public static float plSwingAutoReleaseAng = -50; //angle that swing releases at, only valid between -90 and 90
+	public static float plSwingAutoReleaseAng = -35; //angle that swing releases at, only valid between -90 and 90
 	public static float plUprightAngled = 0.05f;//angle by default. May be angled upwards to prevent terrain sticking
 	public static float plObstacleSlowdownMult = 0.5f;//slowdown when hitting objects
 
@@ -66,7 +66,13 @@ public class Settings {
 	public static float gameScreenY = 50f;//the y around the player we concern with
 	public static float levelPlatformMaxHeight = 20f;//height after which platforms will be forced downwards
 	public static float levelPlatformMinHeight = 8f;//the height below which further endings can occur
+	public static int levelPatternMinLength = 1;//Minimum length before pattern ending
+	public static int levelPatternMaxLength = 5;//Max length before pattern ending (including minlength)
 	public static int levelPlatformBaseStartChance = 4;//1 in x chance of starting
 	public static int levelPlatformBaseEndChance = 10;//1 in x chance of starting
+	public static int minJumpClearance = 8;//min space between gaps
+	public static int maxJumpClearance = 12;//max space between gaps
+	public static int topJumpHeight = 2;//max upwards climb
+	public static int bottomJumpHeight = -4;//max downward drop
 	#endregion
 }

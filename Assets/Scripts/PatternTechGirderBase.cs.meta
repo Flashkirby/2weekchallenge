@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 4eb4875a5e2840445b9d6aa4cd3fd6ca
+timeCreated: 1443993663
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - EdgeRight: {fileID: 108168, guid: b5eabf31a8488b343b91a83c2492d610, type: 2}
+  - EdgeLeft: {fileID: 143132, guid: f3708ba99c2381f439e7f90c2ecf27eb, type: 2}
+  - Straight: {fileID: 183370, guid: 3cfd6e3f9e68ca945b8e089c3d296986, type: 2}
+  - KickOff: {fileID: 170672, guid: 37dc30767db319d46a29c228dcca3f9c, type: 2}
+  - RampDown: {fileID: 190438, guid: b5b40cde7417f934c917e473e73c195e, type: 2}
+  - KickSwing: {fileID: 177962, guid: baaa687556875584e80d2964bd2098fb, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

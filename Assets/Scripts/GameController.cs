@@ -27,7 +27,8 @@ public class GameController : MonoBehaviour
 	private int platformLength;//current ongoing length of platform combo. increases chances of ending.
 	private bool platformEnding;//currently trying to resolve platforms
 	private float patternHeight;//current prefab height world position, stops platforms spawning here.
-	private enum GenState{
+	private int baseLength;//current length of the base (since last gap)
+	public enum GenState{
 		ground,
 		platformStart,
 		groundPlatform,
@@ -35,17 +36,20 @@ public class GameController : MonoBehaviour
 	}
 	private GenState genstate;
 
-	private int patternStyle;//used to denote theme or style of current base and platforms.
-	private int baseLength;//current length of the base (since last gap)
+	public GameObject[] PatternStyleGO;
+	private PatternStyle[] patterns;
+	private int curPatternStyle;//used to denote theme or style of current base and platforms.
 
 	#region Patterns
 	public GameObject PatternStart;
+	/*
 	public GameObject PatternStraight8;
 	public GameObject PatternNew;
 	public GameObject PatternOld;
 	public GameObject PatternRampDown8;
 	public GameObject PatternSwing16;
 	public GameObject PatternPlatfStartKickOff16;
+	*/
 	public GameObject PatternPlatStraight8;
 	public GameObject PatternPlatDown16;
 	#endregion
@@ -69,6 +73,14 @@ public class GameController : MonoBehaviour
 		platformEnding = false;
 		baseLength = 0;
 		genstate = GenState.ground;
+
+		patterns = new PatternStyle[PatternStyleGO.Length];
+		for(int gi = 0; gi<PatternStyleGO.Length; gi++)
+		{
+			PatternStyle ps = PatternStyleGO[gi].GetComponent<PatternStyle>();
+			patterns[gi] = ps;
+			Debug.Log(ps.ping());
+		}
 
 		levelGenerateInitial(5);
 		timer = 0;
@@ -250,7 +262,7 @@ public class GameController : MonoBehaviour
 
 
 
-	private void levelGenerateOld()
+	private void levelGenerateOLD()
 	{
 		//no active platform layer
 		if(platformHeight.Equals(-1))
@@ -458,6 +470,7 @@ public class GameController : MonoBehaviour
 	/// <returns>The prefab selected</returns>
 	private GameObject PickPrefab()
 	{
+		/*
 		//Debug.Log(platformHeight + " | " + platformLength + " | " + platformEnding + " | " + patternHeight);
 
 		//if(platformHeight.Equals(0) && platformLength.Equals(0))
@@ -475,19 +488,27 @@ public class GameController : MonoBehaviour
 			return PatternSwing16;
 		}
 		return PatternStraight8;
+		*/
+		if(genstate == GenState.platformStart)
+		{
+			platformLength++;
+			return patterns[curPatternStyle].getPrefabStartPlatform(levelRandom.Next(10000));
+		}
+		return patterns[curPatternStyle].getPrefabRandom(levelRandom.Next(10000));
 	}
 
 	private GameObject PickEdgePrefabs(bool end)
 	{
 		if(!end)
 		{
-			return PatternOld;
+			return patterns[curPatternStyle].getPrefabEdgeRight(levelRandom.Next(10000));
 		}
 		else
 		{
-			patternStyle = 0;
-			return PatternNew;
+			curPatternStyle = 0;
+			return patterns[curPatternStyle].getPrefabEdgeLeft(levelRandom.Next(10000));
 		}
+
 	}
 
 	/// <summary>

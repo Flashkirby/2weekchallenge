@@ -3,8 +3,8 @@ using System.Collections;
 
 public class Settings {
 	#region dev variables
-	public static bool devPlayer = Application.isEditor;
-	public static bool devLevel = false;
+	public static bool devPlayer = false;
+	public static bool devLevel = Application.isEditor;
 	#endregion
 
 	#region player variables
@@ -72,7 +72,7 @@ public class Settings {
 	public static int levelPlatformBaseEndChance = 10;//1 in x chance of starting
 	public static int minJumpClearance = 8;//min space between gaps
 	public static int maxJumpClearance = 12;//max space between gaps
-	public static int topJumpHeight = 2;//max upwards climb
+	public static int topJumpHeight = 1;//max upwards climb
 	public static int bottomJumpHeight = -4;//max downward drop
 	#endregion
 }

@@ -4,6 +4,7 @@ using System.Collections;
 public class Settings {
 	#region dev variables
 	public static bool devPlayer = Application.isEditor;
+	public static bool devLevel = false;
 	#endregion
 
 	#region player variables
@@ -24,7 +25,7 @@ public class Settings {
 	public static float plClimbStepUpBonusVel = 2f; //bonus velocity granted from step up
 	public static float plClimbReachXMult = 0.7f; //distance from ledge the grab action must be, relative to player size.x
 	public static float plClimbTimeMax = 1f; //maximum time it takes to climb, if triggered from the bottom, in seconds
-	public static float plFallStumbleVel = 15f; //y velocity at which the player stumbles on landing
+	public static float plFallStumbleVel = 20f; //y velocity at which the player stumbles on landing
 	public static float plFallStumbleTimeMax = 0.4f; //stumble animation - acceleration is halved during it
 	public static float plFallStumbleSlowDown = 0.25f; //mult of velocity remaining after landing
 	public static float plFallStumbleAccel = 0.5f; //ratio fo acceleration applied when stumbling
@@ -36,7 +37,7 @@ public class Settings {
 	public static float plRollTimeMax = 0.4f; //rolling animation - acceleration is increased during it
 	public static float plRollSlowDown = 0.75f; //mult of velocity remaining after landing
 	public static float plRollAccel = 0.5f; //accel during hard rolls
-	public static float plFallDeathVel = 50f; //the velocity that will kill the player
+	public static float plFallDeathVel = 45f; //the velocity that will kill the player
 	public static float plVaultCheckDist = 1.5f; //worldspace distance checked as a radius from center to edge
 	public static float plVaultTimeMax = 0.5f; //checked distance for vault triggers. This gets faster with speed
 	public static float plVaultFlatVel = 8f; //minimum velocity speed after vaulting
@@ -50,7 +51,6 @@ public class Settings {
 	public static float plSwingAutoReleaseAng = -35; //angle that swing releases at, only valid between -90 and 90
 	public static float plUprightAngled = 0.05f;//angle by default. May be angled upwards to prevent terrain sticking
 	public static float plObstacleSlowdownMult = 0.5f;//slowdown when hitting objects
-
 	#endregion
 
 	#region camera
@@ -62,10 +62,10 @@ public class Settings {
 
 	#region level gen
 	public static float gameBackScreenX = 25f;//the x behind the player we concern with
-	public static float gameScreenX = 75f;//the x in front of the player we concern with
+	public static float gameScreenX = 75f;//the x in front of the player we concern with. use 30f for testing in front of player
 	public static float gameScreenY = 50f;//the y around the player we concern with
 	public static float levelPlatformMaxHeight = 20f;//height after which platforms will be forced downwards
-	public static float levelPlatformMinHeight = 8f;//the height below which further endings can occur
+	public static float levelPlatformMinHeight = 6f;//the height below which a platform can end
 	public static int levelPatternMinLength = 1;//Minimum length before pattern ending
 	public static int levelPatternMaxLength = 5;//Max length before pattern ending (including minlength)
 	public static int levelPlatformBaseStartChance = 4;//1 in x chance of starting

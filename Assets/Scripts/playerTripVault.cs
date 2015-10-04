@@ -16,7 +16,7 @@ public class playerTripVault : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if(other.tag.Equals("VaultObj") && motor.autoBehaviour)
+		if(other.tag.Equals("VaultObj") && motor.autoBehaviour && c.bounds.max.x < other.transform.position.x)
 		{
 			r.velocity = new Vector2(r.velocity.x * Settings.plObstacleSlowdownMult, r.velocity.y);
 

@@ -3,7 +3,7 @@ using System.Collections;
 
 /// <summary>
 /// TODO
-/// Why is random platforms appearing
+/// Why is random platforms appearing - trying to place more platforms but a platform starter isn't being spawned
 /// see seed -578153728
 /// </summary>
 
@@ -26,7 +26,14 @@ public class GameController : MonoBehaviour
 	private float platformHeight;//height of current platend above baseend. -1 means inavtive
 	private int platformLength;//current ongoing length of platform combo. increases chances of ending.
 	private bool platformEnding;//currently trying to resolve platforms
-	private float patternHeight;//current prefab height, stops platforms spawning here
+	private float patternHeight;//current prefab height world position, stops platforms spawning here.
+	private enum GenState{
+		ground,
+		platformStart,
+		groundPlatform,
+		platformEnding
+	}
+	private GenState genstate;
 
 	private int patternStyle;//used to denote theme or style of current base and platforms.
 	private int baseLength;//current length of the base (since last gap)
@@ -61,6 +68,7 @@ public class GameController : MonoBehaviour
 		platformLength = 0;
 		platformEnding = false;
 		baseLength = 0;
+		genstate = GenState.ground;
 
 		levelGenerateInitial(5);
 		timer = 0;
@@ -119,9 +127,31 @@ public class GameController : MonoBehaviour
 		timer += Time.deltaTime;
 	}
 
+	void OnDrawGizmos()
+	{
+		if(Settings.devLevel)
+		{
+			Gizmos.color = Color.green;
+			Gizmos.DrawSphere(
+				lastPatternBaseEnd,1f);
+			Gizmos.color = Color.yellow;
+			Gizmos.DrawSphere(
+				new Vector3(lastPatternBaseEnd.x,patternHeight),0.25f);
+			Gizmos.color = Color.red;
+			Gizmos.DrawSphere(
+				lastPatternPlatEnd,0.5f);
+		}
+	}
+
 	void OnGUI ()
 	{
-		GUI.Label(new Rect(Screen.width/2, 0, Screen.width, Screen.height), "Seed: "+levelSeed);
+		if(Settings.devLevel)
+		{
+			GUI.Label(new Rect(Screen.width/2, 0, Screen.width, Screen.height), "Seed: "+levelSeed);
+			GUI.Label(new Rect(0, 0, Screen.width, Screen.height), "pattern height: "+patternHeight);
+			GUI.Label(new Rect(0, 10, Screen.width, Screen.height), "platform height: "+platformHeight);
+			GUI.Label(new Rect(0, 20, Screen.width, Screen.height), "gen state: "+genstate.ToString());
+		}
 	}
 
 	/// <summary>
@@ -136,9 +166,91 @@ public class GameController : MonoBehaviour
 			levelGenerate();
 		}
 	}
-
-
 	private void levelGenerate()
+	{
+		bool patternTick = false;
+		bool platTick = false;
+		if(lastPatternBaseEnd.x < gameScreen.max.x) patternTick = true;
+		if(lastPatternPlatEnd.x < gameScreen.max.x) platTick = true;
+
+		levelGenerateSetGenState(patternTick, platTick);
+		levelGeneratePlacement(patternTick, platTick);
+
+	}
+
+	private void levelGenerateSetGenState(bool patternTick, bool platTick)
+	{
+		//make gaps in ground
+		if(genstate == GenState.ground && patternTick)
+		{	//start chance is base change, reduces with each check (platform length)
+			if(levelRandom.Next(Settings.levelPlatformBaseStartChance + platformLength) == 0)
+			{	//reset platform height and length to starting active value
+				platformLength = 0;
+				genstate = GenState.platformStart;
+			}
+			else
+			{	//increase chances
+				platformLength--;
+				genstate = GenState.ground;
+			}
+		}
+		//check/end length of current platform
+		if(genstate == GenState.groundPlatform && platTick)
+		{	//roll for ending limit using same rules as starting one (see above)
+			if(levelRandom.Next(Settings.levelPlatformBaseEndChance - platformLength) == 0)
+			{
+				//platformEnding = true;
+				genstate = GenState.platformEnding;
+			}
+			else
+			{
+				platformLength++;
+			}
+		}
+		if(genstate == GenState.platformStart && patternTick)
+		{
+			if(platformHeight != -1)
+			{
+				genstate = GenState.groundPlatform;
+			}
+		}
+		if(platTick &&
+		   (genstate == GenState.platformEnding && platformHeight <= Settings.levelPlatformMinHeight))
+		{
+			if(platformHeight <= Settings.levelPlatformMinHeight)
+			{
+				platformHeight = -1;
+				platformLength = 0;
+				genstate = GenState.ground;
+			}
+		}
+	}
+	private void levelGeneratePlacement(bool patternTick, bool platTick)
+	{
+		if(patternTick)
+		{
+			if(baseLength > Settings.levelPatternMinLength
+			   && levelRandom.Next(Settings.levelPatternMaxLength - baseLength) == 0)
+			{	//places an edge prefab, followed by another reversed edge prefab in a random style
+				baseLength = 0;
+				placeEdgePrefab(PickEdgePrefabs(false), PickEdgePrefabs(true));
+			}
+			else
+			{	//places a prefab now. platform height&length being 0 causes a platform start
+				baseLength++;
+				placePrefab(PickPrefab());
+			}
+		}
+		if(platTick && 
+		   (genstate == GenState.groundPlatform || genstate == GenState.platformEnding))
+		{
+			placePrefabPlat(pickPlatform());
+		}
+	}
+
+
+
+	private void levelGenerateOld()
 	{
 		//no active platform layer
 		if(platformHeight.Equals(-1))
@@ -224,9 +336,10 @@ public class GameController : MonoBehaviour
 
 	}
 
+
 	/// <summary>
 	/// Places the designated pattern onto the end of the previous pattern, 
-	/// using AttachStart and AttachEnd tags, as well as PlatformEnd Tag
+	/// using AttachStart and AttachEnd tags, as well as PlatformEnd Tag.
 	/// </summary>
 	/// <param name="pattern">Pattern.</param>
 	private void placePrefab(GameObject pattern)
@@ -259,17 +372,22 @@ public class GameController : MonoBehaviour
 		go.transform.position = lastPatternBaseEnd - attachStart.localPosition;
 		for(int i = 0; i < go.transform.childCount; i++)
 		{
+			Transform child = go.transform.GetChild(i);
+			if(child.tag.Equals("Swing")) patternHeight = Mathf.Max(patternHeight, child.position.y);
 			try
 			{
-				Collider2D col = go.transform.GetChild(i).GetComponent<Collider2D>();
+				Collider2D col = child.GetComponent<Collider2D>();
 				patternHeight = Mathf.Max(patternHeight, col.bounds.max.y);
 			}
 			catch{}
 		}
 		lastPatternBaseStart = attachStart.position;
 		lastPatternBaseEnd = attachEnd.position;
-		if(attachPlatform != null) lastPatternPlatEnd = attachPlatform.position;
-
+		if(attachPlatform != null) 
+		{
+				lastPatternPlatEnd = attachPlatform.position;
+				platformHeight = lastPatternPlatEnd.y - lastPatternBaseEnd.y;
+		}
 	}
 
 	/// <summary>
@@ -313,7 +431,9 @@ public class GameController : MonoBehaviour
 		
 		go.transform.position = lastPatternPlatEnd - attachStart.localPosition;
 		lastPatternPlatEnd = attachEnd.position;
+		platformHeight = lastPatternPlatEnd.y - lastPatternBaseEnd.y;
 
+		//remove overlapping platform on larger/taller bases
 		for(int i = 0; i < go.transform.childCount; i++)
 		{
 			try
@@ -330,8 +450,6 @@ public class GameController : MonoBehaviour
 			}
 			catch{}
 		}
-
-		platformHeight = lastPatternPlatEnd.y - lastPatternBaseEnd.y;
 	}
 
 	/// <summary>
@@ -342,7 +460,8 @@ public class GameController : MonoBehaviour
 	{
 		//Debug.Log(platformHeight + " | " + platformLength + " | " + platformEnding + " | " + patternHeight);
 
-		if(platformHeight.Equals(0) && platformLength.Equals(0))
+		//if(platformHeight.Equals(0) && platformLength.Equals(0))
+		if(genstate == GenState.platformStart)
 		{
 			platformLength++;
 			return PatternPlatfStartKickOff16;
@@ -377,7 +496,8 @@ public class GameController : MonoBehaviour
 	/// <returns>The prefab selected</returns>
 	private GameObject pickPlatform()
 	{
-		if(platformHeight > Settings.levelPlatformMaxHeight || platformEnding)
+		//if(platformHeight > Settings.levelPlatformMaxHeight || platformEnding)
+		if(platformHeight > Settings.levelPlatformMaxHeight || genstate == GenState.platformEnding)
 		{
 			return PatternPlatDown16;
 		}

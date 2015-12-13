@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 /// <summary>
-/// TODO
-/// Why is random platforms appearing - trying to place more platforms but a platform starter isn't being spawned
-/// see seed -578153728
+/// 
+/// https://docs.google.com/document/d/14gEg-Eo7d1vDtcb9Kbq_ZyeaPTNCjojapc_8H3lmS2k/edit
+/// 
+/// 
+/// 
 /// </summary>
 
 public class GameController : MonoBehaviour 
@@ -13,6 +16,8 @@ public class GameController : MonoBehaviour
 
 	public bool started;
 	public float timer;
+
+	public Text guiScoreText;
 
 	public Rect GameScreen{get{return gameScreen;}}
 	private Rect gameScreen;
@@ -54,6 +59,8 @@ public class GameController : MonoBehaviour
 	public GameObject PatternPlatDown16;
 	#endregion
 
+	public ScoreSystem scoreSys;
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -84,6 +91,9 @@ public class GameController : MonoBehaviour
 
 		levelGenerateInitial(5);
 		timer = 0;
+
+		scoreSys = new ScoreSystem();
+		guiScoreText.text = "0";
 	}
 	/// <summary>
 	/// Gets the top level player tagged object in the scene, aka the main player gameobject
@@ -123,6 +133,20 @@ public class GameController : MonoBehaviour
 				started = true;
 				pm.autoBehaviour = true;
 			}
+		}
+	}
+
+	void FixedUpdate()
+	{
+		if(started)
+		{
+			scoreSys.calculateScore(player.transform.position.x);
+			guiScoreText.text = "" + scoreSys.Score;
+		}
+		else
+		{
+			//set current x in score to wher player is
+			scoreSys.resetScore(player.transform.position.x);
 		}
 	}
 
@@ -532,6 +556,11 @@ public class GameController : MonoBehaviour
 	{
 		foreach(GameObject go in GameObject.FindObjectsOfType<GameObject>())
 		{
+			if(go.layer == LayerMask.NameToLayer("UI"))
+			{
+				continue;
+			}
+
 			if(go.activeInHierarchy && 
 			   (go.transform.position.x < gameScreen.x
 			   ||go.transform.position.y < gameScreen.yMin)

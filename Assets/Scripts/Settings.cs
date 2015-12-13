@@ -20,7 +20,7 @@ public class Settings {
 
 	public static float plGraceInputMaxTime = 0.2f; //the grace period where taps are accepted before the event
 	public static float plGraceInputCoolTime = 0.1f; //the cooldown period where taps are not accepted after the event
-	public static float plClimbRatio = 0.6f; //ratio of climbing action where speed is lost
+	public static float plClimbRatio = 0.4f; //ratio of climbing action where speed is lost. Higher value means lower you can go and still keep speed
 	public static float plClimbStepUpFlatVel = 3f; //velocity after climbing
 	public static float plClimbStepUpBonusVel = 2f; //bonus velocity granted from step up
 	public static float plClimbReachXMult = 0.7f; //distance from ledge the grab action must be, relative to player size.x
